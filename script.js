@@ -45,7 +45,7 @@ const characters = [
     { name: "Yi", image: "imagens/yi.webp" },
     { name: "Laika", image: "imagens/laika.png" },
     { name: "Madeline", image: "imagens/madeline.jpg" },
-    { name: "Jimmy", image: "imagens/Jimmy.webp" },
+    { name: "Jimmy", image: "imagens/jimmy.webp" },
     { name: "Zumbi", image: "imagens/zumbi.jpg" },
     { name: "Hades", image: "imagens/hades.jpg" },
     { name: "Lamb", image: "imagens/lamb.webp" },

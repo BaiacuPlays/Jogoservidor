@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Pizzaria del Gatito, the game</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="startMenu" class="centered-menu">
+    <h2>Menu Inicial</h2>
+    <button class="menu-button" onclick="startGame()">Começar Jogo</button>
+    <button class="menu-button" onclick="openCategoryMenu()">Mudar Categorias</button>
+    <button class="menu-button" onclick="openCustomizationMenu()">Customização</button>
+  </div>
+  
+  <div id="categoryMenu" class="centered-menu" style="display: none;">
+    <h2>Categorias</h2>
+    <ul>
+      <li>Categoria 1</li>
+      <li>Categoria 2</li>
+      <li>Categoria 3</li>
+      <li>Categoria 4</li>
+      <li>Categoria 5</li>
+    </ul>
+    <button class="menu-button" onclick="backToMainMenu()">Voltar</button>
+  </div>
+  
+  <div id="customizationMenu" class="centered-menu" style="display: none;">
+    <h2>Customização</h2>
+    <label for="themeSelect">Tema:</label>
+    <select id="themeSelect">
+      <option value="dark">Escuro</option>
+      <option value="light">Claro</option>
+    </select>
+    <br><br>
+    <label for="scaleRange">Tamanho da interface:</label>
+    <input type="range" id="scaleRange" min="0.5" max="1.5" step="0.1" value="1">
+    <br><br>
+    <button class="menu-button" onclick="backToMainMenu()">Voltar</button>
+  </div>
+
+  <main style="display: none;">
+    <header>
+      <h1>Jogo muito legal e divertido</h1>
+      <div id="point-counter">Personagens restantes: 40</div>
+      <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
+      <button class="menu-button small" onclick="resetCharacters()">Resetar Personagens</button>
+    </header>
+
+    <div id="chosenDisplay">
+      <strong>Seu personagem:</strong>
+      <div class="image-container" id="chosenCharacterBox"></div>
+    </div>
+
+    <section class="character-grid" id="characterGrid"></section>
+  </main>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

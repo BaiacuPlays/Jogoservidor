@@ -1,0 +1,8 @@
+{  
+    "crons": [
+      {
+        "path": "/api/scheduled/generate-mixes",
+        "schedule": "0 0 * * *"
+      }
+    ]
+  }

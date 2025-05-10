@@ -198,8 +198,11 @@ body.dark header .menu-button {
   flex-direction: column;
   gap: 10px;
 }
-
-
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
 
 /* Responsivo para telas até 768px */
 @media (max-width: 768px) {

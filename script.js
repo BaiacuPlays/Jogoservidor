@@ -5,6 +5,7 @@ let chosenCharacter = null;
 
 const characterGrid = document.getElementById('characterGrid');
 const chosenCharacterBox = document.getElementById('chosenCharacterBox');
+const selectedCategory = document.getElementById('selectedCategory'); // Referência ao span
 
 const characters = [
   { name: "Mario", image: "imagens/mario.jpeg" },
@@ -59,13 +60,13 @@ const characters = [
   { name: "VAULT", image: "imagens/vault.webp" },
 ];
 
-const nintendoCharacters = ['Mario', 'Link', 'Pikachu', 'Kirby', 'Donkey', 'Megaman', 'Ryu', 'Banjo', 'Bowser', 'Crash', 'Eggman', 'Sonic', 'Zelda'];
-const anthropomorphicCharacters = ['Master Chief', 'Lara Croft', 'Steve', 'Mewtwo', 'Shadow', 'Snake', 'Sora', 'Spyro', 'Tail', 'Uncharted', 'Wario', 'Rayman', 'Kratos', 'Hades', 'Ralsei', 'Yi', 'Laika', 'Madeline', 'Jimmy', 'Zumbi', 'Bomberman', 'Pacman'];
+const nintendoCharacters = ['Mario', 'Link', 'Pikachu', 'Kirby', 'Donkey', 'Bowser', 'Zelda', 'Wario', 'Mewtwo'];
+const anthropomorphicCharacters = ['Mewtwo', 'Shadow','Spyro', 'Tail','Ralsei', 'Yi', 'Laika', 'Pikachu', 'Donkey', 'Banjo', 'Asriel', 'Ori', 'Lamb', 'Crash', 'Bowser'];
 
 function startGame() {
   document.getElementById('startMenu').style.display = 'none';
   document.querySelector('main').style.display = 'flex';
-  createCharacterGrid('Todos'); // Exibe todos os personagens ao iniciar
+  createCharacterGrid('Todos');
 }
 
 function openCustomizationMenu() {
@@ -84,32 +85,30 @@ function goBackToMenu() {
 }
 
 function selectCategory(category) {
+  selectedCategory.textContent = category;
   characterGrid.innerHTML = '';
   createCharacterGrid(category);
 }
 
 function createCharacterGrid(category) {
   let filteredCharacters = [];
-  let currentMaxPoints = maxPoints; // Usaremos isso para atualizar a contagem
+  let currentMaxPoints = maxPoints;
 
   if (category === 'Nintendo') {
     filteredCharacters = characters.filter(char => nintendoCharacters.includes(char.name));
-    currentMaxPoints = filteredCharacters.length; // Ajusta a contagem máxima
+    currentMaxPoints = filteredCharacters.length;
   } else if (category === 'Antropomórficos') {
     filteredCharacters = characters.filter(char => anthropomorphicCharacters.includes(char.name));
-    currentMaxPoints = filteredCharacters.length; // Ajusta a contagem máxima
-  } else if (category === 'Todos') {
-    filteredCharacters = characters;
-    currentMaxPoints = maxPoints; // Volta ao máximo original
+    currentMaxPoints = filteredCharacters.length;
   } else {
-    console.error('Categoria não reconhecida:', category);
-    return;
+    filteredCharacters = characters;
+    currentMaxPoints = maxPoints;
   }
 
-  usedPoints = 0; // Reseta a contagem ao mudar de categoria
+  usedPoints = 0;
   playerChosen = false;
   chosenCharacterBox.innerHTML = '';
-  updateCounter(currentMaxPoints); // Passa o novo valor máximo para a função de atualização
+  updateCounter(currentMaxPoints);
 
   if (filteredCharacters.length > 0) {
     filteredCharacters.forEach(char => {
@@ -145,7 +144,7 @@ function createCharacterGrid(category) {
             usedPoints++;
           }
         }
-        updateCounter(currentMaxPoints); // Atualiza a contagem com o valor máximo atual
+        updateCounter(currentMaxPoints);
       };
     });
   } else {
@@ -158,23 +157,26 @@ function updateCounter(max) {
   document.getElementById('point-counter').innerText = `Personagens restantes: ${remaining}`;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  const categoryDropdownButton = document.querySelector('.controls .dropdown > .menu-button');
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  const categoryButton = document.getElementById('categoryButton');
   const categoryDropdown = document.getElementById('categoryDropdown');
 
-  categoryDropdownButton.addEventListener('click', function() {
+  categoryButton.addEventListener('click', function (event) {
+    event.stopPropagation();
     categoryDropdown.classList.toggle('show');
   });
 
-  // Fechar o dropdown se o usuário clicar fora dele
-  window.addEventListener('click', function(event) {
-    if (!event.target.matches('.controls .dropdown > .menu-button')) {
-      if (categoryDropdown.classList.contains('show')) {
-        categoryDropdown.classList.remove('show');
-      }
+
+  
+  window.addEventListener('click', function (event) {
+    if (!document.querySelector('.dropdown').contains(event.target)) {
+      categoryDropdown.classList.remove('show');
     }
   });
 });
 
-// Modifica a chamada inicial de updateCounter para usar o maxPoints inicial
+
+// Inicializa o contador ao carregar
 updateCounter(maxPoints);

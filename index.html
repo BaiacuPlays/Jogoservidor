@@ -33,16 +33,24 @@
       <div class="controls">
         <div id="point-counter">Personagens restantes: 50</div>
         <div class="dropdown">
-          <button class="menu-button small">Categorias</button>
+          <button id="categoryButton" class="menu-button small">
+            Categoria: <span id="selectedCategory">Todos</span>
+          </button> 
           <div id="categoryDropdown" class="dropdown-content">
             <button onclick="selectCategory('Todos')" class="dropdown-item">Todos</button>
             <button onclick="selectCategory('Nintendo')" class="dropdown-item">Nintendo</button>
             <button onclick="selectCategory('Antropomórficos')" class="dropdown-item">Antropomórfico</button>
+            <button onclick="selectCategory('Categoria 3')" class="dropdown-item">Categoria 3</button>
+            <button onclick="selectCategory('Categoria 4')" class="dropdown-item">Categoria 4</button>
+            <button onclick="selectCategory('Categoria 5')" class="dropdown-item">Categoria 5</button>
+            <button onclick="selectCategory('Categoria 6')" class="dropdown-item">Categoria 6</button>
+            <button onclick="selectCategory('Categoria 7')" class="dropdown-item">Categoria 7</button>
           </div>
         </div>
         
-        <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
         <button class="menu-button small" onclick="resetCharacters()">Resetar Personagens</button>
+        <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
+        
       </div>
     </header>
 

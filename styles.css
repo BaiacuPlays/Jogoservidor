@@ -67,10 +67,9 @@ main {
 }
 
 #chosenCharacterBox {
- border: 2px solid white ;
- border-radius: 10px;
+  border: 2px solid white;
+  border-radius: 10px;
 }
-
 
 .centered-menu {
   display: flex;
@@ -104,6 +103,7 @@ main {
   font-size: 14px;
   margin-top: 10px;
 }
+
 :root {
   --interface-scale: 1;
 }
@@ -129,7 +129,6 @@ body.light header {
   color: #000000;
 }
 
-/* Tema escuro */
 body.dark header {
   background-color: #1e1e1e;
   color: #ffffff;
@@ -145,4 +144,38 @@ body.dark header .menu-button {
   background-color: #333333;
   color: #ffffff;
   border: 1px solid #555;
+}
+
+@media (max-width: 768px) {
+  .character-grid {
+    grid-template-columns: repeat(6, 1fr); /* 6 por linha para tablets */
+  }
+  .menu-button {
+    width: 160px;
+    font-size: 12px;
+  }
+  #point-counter {
+    font-size: 16px;
+  }
+  main {
+    flex-direction: column; /* Empilhar os itens para telas pequenas */
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .character-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 por linha para celulares */
+  }
+  .menu-button {
+    width: 140px;
+    font-size: 12px;
+  }
+  #point-counter {
+    font-size: 14px;
+  }
+  .character {
+    width: 90%;
+    margin: 0 auto;
+  }
 }

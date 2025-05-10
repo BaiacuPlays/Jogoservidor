@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pizzaria del Gatito, the game</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -9,16 +10,9 @@
   <div id="startMenu" class="centered-menu">
     <h2>Menu Inicial</h2>
     <button class="menu-button" onclick="startGame()">Começar Jogo</button>
-    <button class="menu-button" onclick="openCategoryMenu()">Mudar Categorias</button>
     <button class="menu-button" onclick="openCustomizationMenu()">Customização</button>
   </div>
-  
-  <div id="categoryMenu" class="centered-menu" style="display: none;">
-    <button class="menu-button" onclick="selectCategory('Nintendo')">Nintendo</button>
-    <button class="menu-button" onclick="selectCategory('Antropomórficos')">Antropomórfico</button>
-    <button class="menu-button small" onclick="backToMainMenu()">Voltar</button>
-  </div>
-  
+
   <div id="customizationMenu" class="centered-menu" style="display: none;">
     <h2>Customização</h2>
     <label for="themeSelect">Tema:</label>
@@ -36,9 +30,20 @@
   <main style="display: none;">
     <header>
       <h1>Jogo muito legal e divertido</h1>
-      <div id="point-counter">Personagens restantes: 40</div>
-      <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
-      <button class="menu-button small" onclick="resetCharacters()">Resetar Personagens</button>
+      <div class="controls">
+        <div id="point-counter">Personagens restantes: 50</div>
+        <div class="dropdown">
+          <button class="menu-button small">Categorias</button>
+          <div id="categoryDropdown" class="dropdown-content">
+            <button onclick="selectCategory('Todos')" class="dropdown-item">Todos</button>
+            <button onclick="selectCategory('Nintendo')" class="dropdown-item">Nintendo</button>
+            <button onclick="selectCategory('Antropomórficos')" class="dropdown-item">Antropomórfico</button>
+          </div>
+        </div>
+        
+        <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
+        <button class="menu-button small" onclick="resetCharacters()">Resetar Personagens</button>
+      </div>
     </header>
 
     <div id="chosenDisplay">

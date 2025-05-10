@@ -4,13 +4,23 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  transform: scale(var(--interface-scale));
+  transform-origin: top left;
+  transition: transform 0.3s ease;
 }
 
 header {
-  text-align: center;
-  padding: 1rem;
   background: #222;
   border-radius: 10px;
+  padding: 1rem;
+  width: 250px;
+  min-width: 200px;
+  max-width: 300px;
+  min-height: 800px;
+  height: fit-content;
+  position: sticky;
+  top: 1rem;
+  align-self: flex-start;
 }
 
 #point-counter {
@@ -21,13 +31,15 @@ header {
 
 main {
   display: flex;
-  padding: 1rem;
+  flex-direction: row;
   gap: 1rem;
+  padding: 1rem;
+  align-items: flex-start;
 }
 
 .character-grid {
   display: grid;
-  grid-template-columns: repeat(10, 1fr); /* 10 por linha fixo */
+  grid-template-columns: repeat(10, 1fr);
   gap: 0.5rem;
   flex-grow: 1;
 }
@@ -46,20 +58,22 @@ main {
 }
 
 .image-container {
+  position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  padding-top: 133.33%;
   overflow: hidden;
   border: 2px solid #444;
   border-radius: 10px;
-  transition: border-color 0.3s;
 }
 
 .image-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 10px;
-  transition: filter 0.3s ease;
 }
 
 .character.selected .image-container img {
@@ -108,12 +122,6 @@ main {
   --interface-scale: 1;
 }
 
-body {
-  transform: scale(var(--interface-scale));
-  transform-origin: top left;
-  transition: transform 0.3s ease;
-}
-
 body.light {
   background-color: #ffffff;
   color: #000000;
@@ -146,36 +154,112 @@ body.dark header .menu-button {
   border: 1px solid #555;
 }
 
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: left;
+}
+
+.dropdown-content.show {
+  display: block;
+}
+
+.dropdown-item {
+  background-color: transparent;
+  color: black;
+  padding: 8px 12px;
+  border: none;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+  width: 100%;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background-color: #ddd;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Responsivo para telas até 768px */
 @media (max-width: 768px) {
-  .character-grid {
-    grid-template-columns: repeat(6, 1fr); /* 6 por linha para tablets */
-  }
-  .menu-button {
-    width: 160px;
-    font-size: 12px;
-  }
-  #point-counter {
-    font-size: 16px;
-  }
   main {
-    flex-direction: column; /* Empilhar os itens para telas pequenas */
-    padding: 10px;
+    flex-direction: column;
+  }
+
+  header {
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    position: relative;
+    top: 0;
+    padding: 1rem;
+    min-height: auto;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .menu-button.small {
+    width: 100%;
+  }
+
+  .character-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #chosenDisplay {
+    text-align: center;
+  }
+
+  #chosenCharacterBox {
+    margin: 0 auto;
+    width: 60%;
+  }
+
+  body {
+    transform: none !important;
   }
 }
 
+/* Responsivo extra para telas muito pequenas (ex: celular pequeno) */
 @media (max-width: 480px) {
   .character-grid {
-    grid-template-columns: repeat(4, 1fr); /* 4 por linha para celulares */
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   }
-  .menu-button {
-    width: 140px;
-    font-size: 12px;
+
+  header h1 {
+    font-size: 1.2rem;
+    text-align: center;
   }
+
   #point-counter {
     font-size: 14px;
   }
-  .character {
-    width: 90%;
-    margin: 0 auto;
+
+  .menu-button {
+    font-size: 14px;
+    padding: 10px;
   }
 }

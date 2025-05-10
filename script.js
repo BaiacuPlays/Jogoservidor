@@ -62,68 +62,18 @@ const characters = [
 const nintendoCharacters = ['Mario', 'Link', 'Pikachu', 'Kirby', 'Donkey', 'Megaman', 'Ryu', 'Banjo', 'Bowser', 'Crash', 'Eggman', 'Sonic', 'Zelda'];
 const anthropomorphicCharacters = ['Master Chief', 'Lara Croft', 'Steve', 'Mewtwo', 'Shadow', 'Snake', 'Sora', 'Spyro', 'Tail', 'Uncharted', 'Wario', 'Rayman', 'Kratos', 'Hades', 'Ralsei', 'Yi', 'Laika', 'Madeline', 'Jimmy', 'Zumbi', 'Bomberman', 'Pacman'];
 
-characters.forEach((char, index) => {
-  const charDiv = document.createElement('div');
-  charDiv.classList.add('character');
-  charDiv.title = `${char.name} - Personagem ${index + 1}`;
-
-  const imgContainer = document.createElement('div');
-  imgContainer.classList.add('image-container');
-
-  const img = document.createElement('img');
-  img.src = char.image;
-  img.alt = char.name;
-
-  imgContainer.appendChild(img);
-  charDiv.appendChild(imgContainer);
-  characterGrid.appendChild(charDiv);
-
-  charDiv.onclick = () => {
-    if (!playerChosen) {
-      playerChosen = true;
-      chosenCharacter = charDiv;
-      charDiv.classList.add('locked');
-      chosenCharacterBox.innerHTML = `<img src="${char.image}" alt="${char.name}">`;
-    }
-
-    if (charDiv.classList.contains('selected')) {
-      charDiv.classList.remove('selected');
-      usedPoints--;
-    } else {
-      if (usedPoints < maxPoints) {
-        charDiv.classList.add('selected');
-        usedPoints++;
-      }
-    }
-
-    updateCounter();
-  };
-});
-
-function updateCounter() {
-  const remaining = maxPoints - usedPoints;
-  document.getElementById('point-counter').innerText = `Personagens restantes: ${remaining}`;
-}
-
 function startGame() {
   document.getElementById('startMenu').style.display = 'none';
   document.querySelector('main').style.display = 'flex';
-}
-
-function openCategoryMenu() {
-  document.getElementById('startMenu').style.display = 'none';
-  document.getElementById('customizationMenu').style.display = 'none';
-  document.getElementById('categoryMenu').style.display = 'flex';
+  createCharacterGrid('Todos'); // Exibe todos os personagens ao iniciar
 }
 
 function openCustomizationMenu() {
   document.getElementById('startMenu').style.display = 'none';
-  document.getElementById('categoryMenu').style.display = 'none';
   document.getElementById('customizationMenu').style.display = 'flex';
 }
 
 function backToMainMenu() {
-  document.getElementById('categoryMenu').style.display = 'none';
   document.getElementById('customizationMenu').style.display = 'none';
   document.getElementById('startMenu').style.display = 'flex';
 }
@@ -134,25 +84,34 @@ function goBackToMenu() {
 }
 
 function selectCategory(category) {
-  characterGrid.innerHTML = '';  // Limpa a grid de personagens
-  createCharacterGrid(category); // Cria a grid de personagens da categoria selecionada
-  document.getElementById('categoryMenu').style.display = 'none';
-  document.querySelector('main').style.display = 'flex';
+  characterGrid.innerHTML = '';
+  createCharacterGrid(category);
 }
 
 function createCharacterGrid(category) {
-  let filteredCharacters;
+  let filteredCharacters = [];
+  let currentMaxPoints = maxPoints; // Usaremos isso para atualizar a contagem
 
   if (category === 'Nintendo') {
     filteredCharacters = characters.filter(char => nintendoCharacters.includes(char.name));
+    currentMaxPoints = filteredCharacters.length; // Ajusta a contagem máxima
   } else if (category === 'Antropomórficos') {
     filteredCharacters = characters.filter(char => anthropomorphicCharacters.includes(char.name));
+    currentMaxPoints = filteredCharacters.length; // Ajusta a contagem máxima
+  } else if (category === 'Todos') {
+    filteredCharacters = characters;
+    currentMaxPoints = maxPoints; // Volta ao máximo original
   } else {
     console.error('Categoria não reconhecida:', category);
-    return; // Se a categoria não for reconhecida, saia da função
+    return;
   }
 
-  if (filteredCharacters && filteredCharacters.length > 0) {
+  usedPoints = 0; // Reseta a contagem ao mudar de categoria
+  playerChosen = false;
+  chosenCharacterBox.innerHTML = '';
+  updateCounter(currentMaxPoints); // Passa o novo valor máximo para a função de atualização
+
+  if (filteredCharacters.length > 0) {
     filteredCharacters.forEach(char => {
       const charDiv = document.createElement('div');
       charDiv.classList.add('character');
@@ -181,26 +140,41 @@ function createCharacterGrid(category) {
           charDiv.classList.remove('selected');
           usedPoints--;
         } else {
-          if (usedPoints < maxPoints) {
+          if (usedPoints < currentMaxPoints) {
             charDiv.classList.add('selected');
             usedPoints++;
           }
         }
-
-        updateCounter();
+        updateCounter(currentMaxPoints); // Atualiza a contagem com o valor máximo atual
       };
     });
   } else {
-    console.error('Nenhum personagem encontrado para a categoria', category);
+    characterGrid.innerHTML = '<p>Nenhum personagem encontrado nesta categoria.</p>';
   }
 }
 
-function resetCharacters() {
-  document.querySelectorAll('.character').forEach(charDiv => {
-    charDiv.classList.remove('selected', 'locked');
-  });
-  usedPoints = 0;
-  playerChosen = false;
-  chosenCharacterBox.innerHTML = '';
-  updateCounter();
+function updateCounter(max) {
+  const remaining = max - usedPoints;
+  document.getElementById('point-counter').innerText = `Personagens restantes: ${remaining}`;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const categoryDropdownButton = document.querySelector('.controls .dropdown > .menu-button');
+  const categoryDropdown = document.getElementById('categoryDropdown');
+
+  categoryDropdownButton.addEventListener('click', function() {
+    categoryDropdown.classList.toggle('show');
+  });
+
+  // Fechar o dropdown se o usuário clicar fora dele
+  window.addEventListener('click', function(event) {
+    if (!event.target.matches('.controls .dropdown > .menu-button')) {
+      if (categoryDropdown.classList.contains('show')) {
+        categoryDropdown.classList.remove('show');
+      }
+    }
+  });
+});
+
+// Modifica a chamada inicial de updateCounter para usar o maxPoints inicial
+updateCounter(maxPoints);

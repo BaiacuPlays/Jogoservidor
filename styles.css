@@ -199,6 +199,8 @@ body.dark header .menu-button {
   gap: 10px;
 }
 
+
+
 /* Responsivo para telas até 768px */
 @media (max-width: 768px) {
   main {

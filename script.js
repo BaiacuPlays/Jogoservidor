@@ -176,7 +176,25 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+function resetCharacters() {
+  usedPoints = 0;
+  playerChosen = false;
+  chosenCharacter = null;
+  chosenCharacterBox.innerHTML = '';
+  
+  // Remove seleção e bloqueio de todos os personagens
+  const allCharacters = characterGrid.querySelectorAll('.character');
+  allCharacters.forEach(charDiv => {
+    charDiv.classList.remove('selected');
+    charDiv.classList.remove('locked');
+  });
 
+  updateCounter(
+    selectedCategory.textContent === 'Nintendo' ? nintendoCharacters.length :
+    selectedCategory.textContent === 'Antropomórficos' ? anthropomorphicCharacters.length :
+    maxPoints
+  );
+}
 
 // Inicializa o contador ao carregar
 updateCounter(maxPoints);

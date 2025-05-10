@@ -1,4 +1,5 @@
-// api/get-mix-chars.js
+// api/get-mix-chars.js - Versão Verificada
+
 // Importa o cliente Vercel KV
 import { kv } from '@vercel/kv';
 
@@ -26,18 +27,19 @@ export default async function handler(req, res) {
 
         // Verifica se encontrou dados (pode não encontrar na primeira vez antes do cron rodar)
         if (characters === null) {
-             console.warn(`!!! Dados não encontrados no KV para a chave: ${category}_characters. Talvez o Cron Job ainda não tenha rodado.`);
-             // Retorna 404 ou uma lista vazia, dependendo de como você quer tratar no front-end
+             console.warn(`!!! Dados não encontrados no KV para a chave: ${category}_characters. Talvez o Cron Job ainda não tenha rodado ou a chave expirou.`);
+             // Retorna 404 se os dados não existirem no KV
              return res.status(404).json({ message: `Lista de personagens para ${category} não encontrada. Tente novamente mais tarde.` });
         }
 
-         // Se encontrou, retorna a lista de personagens como JSON
-         console.log(`Dados encontrados para ${category}. Retornando ${Array.isArray(characters) ? characters.length : '???'} personagens.`);
-         return res.status(200).json(characters); // O SDK já retornou o array/objeto parsed
+        // Se encontrou, retorna a lista de personagens como JSON
+        console.log(`Dados encontrados para ${category}. Retornando ${Array.isArray(characters) ? characters.length : '???'} personagens.`);
+        return res.status(200).json(characters); // O SDK já retornou o array/objeto parsed
 
     } catch (error) {
-        // Em caso de erro na busca do KV
+        // Em caso de erro na busca do KV (ex: problema de conexão, variáveis de ambiente incorretas no deploy)
         console.error(`!!! ERRO ao buscar dados no KV para ${category}:`, error);
+        // Retorna 500 em caso de erro interno do servidor
         return res.status(500).json({ message: 'Falha ao buscar personagens do Mix.', error: error.message });
     }
 }

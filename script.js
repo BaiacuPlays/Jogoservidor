@@ -1,4 +1,4 @@
-const maxPoints = 200;
+const maxPoints = 128;
 let usedPoints = 0;
 let playerChosen = false;
 let chosenCharacter = null;
@@ -35,6 +35,12 @@ async function generateMixesIfNeeded() {
 async function selectCategory(categoryName) {
     if (selectedCategory) { selectedCategory.textContent = categoryName; }
     if (characterGrid) { characterGrid.innerHTML = ''; }
+    
+    // Esconde a seção do personagem escolhido durante o carregamento
+    const chosenDisplay = document.getElementById('chosenDisplay');
+    if (chosenDisplay) {
+        chosenDisplay.classList.add('hidden');
+    }
 
     let charactersToDisplay = [];
     let maxPointsForCategory;
@@ -96,6 +102,13 @@ async function selectCategory(categoryName) {
     currentActiveCharacterList = charactersToDisplay;
     currentActiveMaxPoints = maxPointsForCategory;
     createCharacterGridInternal();
+
+    // Mostra a seção do personagem escolhido após o carregamento
+    if (chosenDisplay) {
+        setTimeout(() => {
+            chosenDisplay.classList.remove('hidden');
+        }, 100);
+    }
 }
 
 function createCharacterGridInternal() {
@@ -104,6 +117,9 @@ function createCharacterGridInternal() {
   chosenCharacter = null;
   if (chosenCharacterBox) {
     chosenCharacterBox.innerHTML = '';
+  }
+  if (characterGrid) {
+    characterGrid.innerHTML = '';
   }
   updateCounter(currentActiveMaxPoints);
 
@@ -172,18 +188,52 @@ document.addEventListener('DOMContentLoaded', function () {
     categoryButton.addEventListener('click', function (event) {
       event.stopPropagation();
       categoryDropdown.classList.toggle('show');
+      if (categoryDropdown.classList.contains('show')) {
+        updateScrollIndicators();
+      }
+    });
+
+    // Atualizar indicadores de scroll quando rolar
+    categoryDropdown.addEventListener('scroll', updateScrollIndicators);
+
+    // Fechar o dropdown quando clicar fora
+    document.addEventListener('click', function (event) {
+      if (!categoryButton.contains(event.target) && !categoryDropdown.contains(event.target)) {
+        categoryDropdown.classList.remove('show');
+      }
+    });
+
+    // Fechar o dropdown quando selecionar um item
+    const dropdownItems = categoryDropdown.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach(item => {
+      item.addEventListener('click', function () {
+        categoryDropdown.classList.remove('show');
+      });
     });
   }
 
-  window.addEventListener('click', function (event) {
-    if (categoryDropdown && categoryButton && !categoryButton.contains(event.target) && !categoryDropdown.contains(event.target)) {
-      categoryDropdown.classList.remove('show');
-    }
-  });
-
   setupEventListeners();
   updateCounter(maxPoints);
+  createPSPBackground();
 });
+
+function updateScrollIndicators() {
+  const dropdown = document.getElementById('categoryDropdown');
+  const topIndicator = dropdown.querySelector('.scroll-indicator.top');
+  const bottomIndicator = dropdown.querySelector('.scroll-indicator.bottom');
+
+  if (dropdown.scrollTop > 0) {
+    topIndicator.style.opacity = '0.9';
+  } else {
+    topIndicator.style.opacity = '0';
+  }
+
+  if (dropdown.scrollHeight - dropdown.scrollTop > dropdown.clientHeight + 1) {
+    bottomIndicator.style.opacity = '0.9';
+  } else {
+    bottomIndicator.style.opacity = '0';
+  }
+}
 
 function setupEventListeners() {
   const startMenuButtons = document.querySelectorAll('#startMenu .menu-button');
@@ -192,6 +242,32 @@ function setupEventListeners() {
     startMenuButtons[1].addEventListener('click', openCustomizationMenu);
   } else {
     console.error("Botões do menu inicial não encontrados ou insuficientes!");
+  }
+
+  const themeSelect = document.getElementById('themeSelect');
+  const scaleRange = document.getElementById('scaleRange');
+
+  if (themeSelect) {
+    themeSelect.addEventListener('change', function() {
+      const theme = this.value;
+      document.body.className = theme;
+      localStorage.setItem('theme', theme);
+    });
+  }
+
+  if (scaleRange) {
+    scaleRange.addEventListener('input', function() {
+      const scale = this.value;
+      document.documentElement.style.setProperty('--interface-scale', scale);
+      document.querySelector('.scale-value').textContent = `${Math.round(scale * 100)}%`;
+      localStorage.setItem('scale', scale);
+    });
+
+    // Carregar escala salva
+    const savedScale = localStorage.getItem('scale') || '1';
+    document.documentElement.style.setProperty('--interface-scale', savedScale);
+    document.getElementById('scaleRange').value = savedScale;
+    document.querySelector('.scale-value').textContent = `${Math.round(savedScale * 100)}%`;
   }
 
   const customizationMenuButton = document.querySelector('#customizationMenu .menu-button');
@@ -238,44 +314,68 @@ function setupEventListeners() {
 }
 
 function startGame() {
-  document.body.classList.add("fade-out");
+  // Esconde o menu inicial
+  const startMenu = document.getElementById('startMenu');
+  startMenu.style.opacity = '0';
+  
+  // Mostra o conteúdo do jogo
+  const mainContent = document.querySelector('main');
+  mainContent.style.display = 'flex';
+  
+  // Após o fade out do menu inicial, esconde ele e mostra o jogo
   setTimeout(() => {
-    if (document.querySelector(".centered-menu")) {
-      document.querySelector(".centered-menu").style.display = "none";
-    }
-    if (document.querySelector("main")) {
-      document.querySelector("main").style.display = "flex";
-    }
-    document.body.classList.remove("fade-out");
+    startMenu.style.display = 'none';
+    mainContent.style.opacity = '1';
     selectCategory('');
   }, 500);
 }
 
 function openCustomizationMenu() {
-  if (document.getElementById('startMenu')) {
-    document.getElementById('startMenu').style.display = 'none';
-  }
-  if (document.getElementById('customizationMenu')) {
-    document.getElementById('customizationMenu').style.display = 'flex';
-  }
+  // Esconde o menu inicial
+  const startMenu = document.getElementById('startMenu');
+  startMenu.style.opacity = '0';
+  
+  // Mostra o menu de customização
+  const customizationMenu = document.getElementById('customizationMenu');
+  customizationMenu.style.display = 'flex';
+  
+  // Após o fade out do menu inicial, esconde ele e mostra o menu de customização
+  setTimeout(() => {
+    startMenu.style.display = 'none';
+    customizationMenu.style.opacity = '1';
+  }, 500);
 }
 
 function backToMainMenu() {
-  if (document.getElementById('customizationMenu')) {
-    document.getElementById('customizationMenu').style.display = 'none';
-  }
-  if (document.getElementById('startMenu')) {
-    document.getElementById('startMenu').style.display = 'flex';
-  }
+  // Esconde o menu de customização
+  const customizationMenu = document.getElementById('customizationMenu');
+  customizationMenu.style.opacity = '0';
+  
+  // Mostra o menu inicial
+  const startMenu = document.getElementById('startMenu');
+  startMenu.style.display = 'flex';
+  
+  // Após o fade out do menu de customização, esconde ele e mostra o menu inicial
+  setTimeout(() => {
+    customizationMenu.style.display = 'none';
+    startMenu.style.opacity = '1';
+  }, 500);
 }
 
 function goBackToMenu() {
-  if (document.querySelector('main')) {
-    document.querySelector('main').style.display = 'none';
-  }
-  if (document.getElementById('startMenu')) {
-    document.getElementById('startMenu').style.display = 'flex';
-  }
+  // Esconde o conteúdo do jogo
+  const mainContent = document.querySelector('main');
+  mainContent.style.opacity = '0';
+  
+  // Mostra o menu inicial
+  const startMenu = document.getElementById('startMenu');
+  startMenu.style.display = 'flex';
+  
+  // Após o fade out do jogo, esconde ele e mostra o menu inicial
+  setTimeout(() => {
+    mainContent.style.display = 'none';
+    startMenu.style.opacity = '1';
+  }, 500);
 }
 
 function resetCharacters() {
@@ -298,5 +398,27 @@ function resetCharacters() {
 
   if (chosenCharacter && chosenCharacterBox) {
     chosenCharacterBox.innerHTML = `<img src="${chosenCharacter.image}" alt="${chosenCharacter.name}">`;
+  }
+}
+
+// Carregar tema salvo
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.body.className = savedTheme;
+document.getElementById('themeSelect').value = savedTheme;
+
+function createPSPBackground() {
+  const menu = document.querySelector('.centered-menu');
+  if (!menu) return;
+
+  // Criar container das ondas
+  const waves = document.createElement('div');
+  waves.className = 'psp-waves';
+  menu.insertBefore(waves, menu.firstChild);
+
+  // Criar 3 camadas de ondas
+  for (let i = 0; i < 3; i++) {
+    const wave = document.createElement('div');
+    wave.className = 'wave';
+    waves.appendChild(wave);
   }
 }

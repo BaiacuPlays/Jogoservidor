@@ -14,14 +14,17 @@ export default async function handler(req, res) {
     console.log(`--- Requisição recebida para Mix: ${category} ---`);
 
     try {
-        const characters = await kv.get(`${category}_characters`);
+        const charactersJson = await kv.get(`${category}_characters`);
 
-        if (characters === null) {
+        if (charactersJson === null) {
             console.warn(`!!! Dados não encontrados no KV para a chave: ${category}_characters.`);
             return res.status(404).json({ message: `Lista de personagens para ${category} não encontrada. Tente novamente mais tarde.` });
         }
 
-        console.log(`Dados encontrados para ${category}. Retornando ${Array.isArray(characters) ? characters.length : '???'} personagens.`);
+        // Se o dado já for um objeto, use-o diretamente
+        const characters = typeof charactersJson === 'string' ? JSON.parse(charactersJson) : charactersJson;
+
+        console.log(`Dados encontrados para ${category}. Retornando ${characters.length} personagens.`);
         res.status(200).json(characters);
     } catch (error) {
         console.error(`!!! ERRO ao buscar dados no KV para ${category}:`, error);

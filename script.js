@@ -13,57 +13,89 @@ import { shuffleArray, getRandomCharacters } from './utils/helpers.js';
 let currentActiveCharacterList = [];
 let currentActiveMaxPoints = maxPoints;
 
-async function selectCategory(categoryName) {
-  if (selectedCategory) { selectedCategory.textContent = categoryName; }
-  if (characterGrid) { characterGrid.innerHTML = ''; }
-
-  let charactersToDisplay = [];
-  let maxPointsForCategory;
-
-  if (categoryName === 'Nintendo') {
-    charactersToDisplay = uniqueCharacters.filter(char => nintendoCharacters.includes(char.name));
-    maxPointsForCategory = charactersToDisplay.length;
-  } else if (categoryName === 'Antropomórficos') {
-    charactersToDisplay = uniqueCharacters.filter(char => anthropomorphicCharacters.includes(char.name));
-    maxPointsForCategory = charactersToDisplay.length;
-  } else if (categoryName === 'Todos' || categoryName === '') {
-    charactersToDisplay = uniqueCharacters;
-    maxPointsForCategory = maxPoints;
-    if (selectedCategory) { selectedCategory.textContent = 'Todos'; }
-  } else if (['Mix 1', 'Mix 2', 'Mix 3'].includes(categoryName)) {
-    const categoryKey = categoryName.replace(' ', '').toLowerCase();
-    const apiUrl = `/api/get-mix-chars?category=${categoryKey}`;
-
-    if (characterGrid) { characterGrid.innerHTML = '<p>Carregando personagens do Mix... Aguarde.</p>'; }
-
+async function generateMixesIfNeeded() {
     try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (characterGrid) { characterGrid.innerHTML = `<p>Não foi possível carregar o Mix ${categoryName}. (${errorData.message || 'Erro desconhecido'})</p>`; }
+        const response = await fetch('/api/force-generate-mixes', {
+            method: 'POST'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Falha ao gerar mixes');
+        }
+        
+        const data = await response.json();
+        console.log('Mixes gerados com sucesso:', data);
+        return true;
+    } catch (error) {
+        console.error('Erro ao gerar mixes:', error);
+        return false;
+    }
+}
+
+async function selectCategory(categoryName) {
+    if (selectedCategory) { selectedCategory.textContent = categoryName; }
+    if (characterGrid) { characterGrid.innerHTML = ''; }
+
+    let charactersToDisplay = [];
+    let maxPointsForCategory;
+
+    if (categoryName === 'Nintendo') {
+        charactersToDisplay = uniqueCharacters.filter(char => nintendoCharacters.includes(char.name));
+        maxPointsForCategory = charactersToDisplay.length;
+    } else if (categoryName === 'Antropomórficos') {
+        charactersToDisplay = uniqueCharacters.filter(char => anthropomorphicCharacters.includes(char.name));
+        maxPointsForCategory = charactersToDisplay.length;
+    } else if (categoryName === 'Todos' || categoryName === '') {
+        charactersToDisplay = uniqueCharacters;
+        maxPointsForCategory = maxPoints;
+        if (selectedCategory) { selectedCategory.textContent = 'Todos'; }
+    } else if (['Mix 1', 'Mix 2', 'Mix 3'].includes(categoryName)) {
+        const categoryKey = categoryName.replace(' ', '').toLowerCase();
+        const apiUrl = `/api/get-mix-chars?category=${categoryKey}`;
+
+        if (characterGrid) { characterGrid.innerHTML = '<p>Carregando personagens do Mix... Aguarde.</p>'; }
+
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                if (response.status === 404) {
+                    // Se não encontrou os dados, tenta gerar os mixes
+                    const generated = await generateMixesIfNeeded();
+                    if (generated) {
+                        // Tenta buscar novamente após gerar
+                        const retryResponse = await fetch(apiUrl);
+                        if (retryResponse.ok) {
+                            charactersToDisplay = await retryResponse.json();
+                            maxPointsForCategory = Math.min(50, charactersToDisplay.length);
+                        } else {
+                            throw new Error('Falha ao buscar mixes após geração');
+                        }
+                    } else {
+                        throw new Error('Falha ao gerar mixes');
+                    }
+                } else {
+                    throw new Error('Erro ao buscar mixes');
+                }
+            } else {
+                charactersToDisplay = await response.json();
+                maxPointsForCategory = Math.min(50, charactersToDisplay.length);
+            }
+        } catch (error) {
+            if (characterGrid) { 
+                characterGrid.innerHTML = `<p>Erro ao carregar o Mix ${categoryName}. ${error.message}</p>`;
+            }
+            charactersToDisplay = [];
+            maxPointsForCategory = 0;
+        }
+    } else {
         charactersToDisplay = [];
         maxPointsForCategory = 0;
-      } else {
-        charactersToDisplay = await response.json();
-        maxPointsForCategory = Math.min(50, charactersToDisplay.length);
-        if (charactersToDisplay.length === 0 && characterGrid) {
-          characterGrid.innerHTML = `<p>Nenhum personagem encontrado para o Mix ${categoryName}. Tente novamente mais tarde.</p>`;
-        }
-      }
-    } catch (error) {
-      if (characterGrid) { characterGrid.innerHTML = `<p>Erro de rede ao carregar o Mix ${categoryName}. Verifique sua conexão.</p>`; }
-      charactersToDisplay = [];
-      maxPointsForCategory = 0;
+        if (selectedCategory) { selectedCategory.textContent = 'Categoria Desconhecida'; }
     }
-  } else {
-    charactersToDisplay = [];
-    maxPointsForCategory = 0;
-    if (selectedCategory) { selectedCategory.textContent = 'Categoria Desconhecida'; }
-  }
 
-  currentActiveCharacterList = charactersToDisplay;
-  currentActiveMaxPoints = maxPointsForCategory;
-  createCharacterGridInternal();
+    currentActiveCharacterList = charactersToDisplay;
+    currentActiveMaxPoints = maxPointsForCategory;
+    createCharacterGridInternal();
 }
 
 function createCharacterGridInternal() {

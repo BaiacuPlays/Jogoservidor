@@ -1,6 +1,6 @@
 // script.js
 
-const maxPoints = 100;
+const maxPoints = 200;
 let usedPoints = 0;
 let playerChosen = false;
 let chosenCharacter = null;

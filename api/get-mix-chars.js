@@ -1,10 +1,12 @@
 import { kv } from '@vercel/kv';
 
 export default async function handler(req, res) {
+    console.log("Conectando ao Upstash...");
     if (req.method !== 'GET') {
         return res.status(405).json({ message: 'Método Não Permitido. Esperado GET.' });
     }
 
+    
     const category = req.query.category;
 
     if (!category || !['mix1', 'mix2', 'mix3'].includes(category)) {
@@ -15,6 +17,7 @@ export default async function handler(req, res) {
 
     try {
         const characters = await kv.get(`${category}_characters`);
+        console.log("Conexão com Upstash bem-sucedida!");
 
         if (characters === null) {
             console.warn(`!!! Dados não encontrados no KV para a chave: ${category}_characters.`);
@@ -24,6 +27,7 @@ export default async function handler(req, res) {
         console.log(`Dados encontrados para ${category}. Retornando ${Array.isArray(characters) ? characters.length : '???'} personagens.`);
         res.status(200).json(characters); // Use res.status().json()
     } catch (error) {
+        console.error("Erro ao conectar ao Upstash:", error);
         console.error(`!!! ERRO ao buscar dados no KV para ${category}:`, error);
         res.status(500).json({
             message: 'Falha ao buscar personagens do Mix.',

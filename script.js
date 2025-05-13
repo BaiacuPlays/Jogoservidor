@@ -1,4 +1,6 @@
-const maxPoints = 128;
+const DEBUG = true;
+const API_BASE_URL = '/api';
+const maxPoints = 200;
 let usedPoints = 0;
 let playerChosen = false;
 let chosenCharacter = null;
@@ -13,21 +15,53 @@ import { shuffleArray, getRandomCharacters } from './utils/helpers.js';
 let currentActiveCharacterList = [];
 let currentActiveMaxPoints = maxPoints;
 
+function debugLog(...args) {
+    if (DEBUG) {
+        console.log('[DEBUG]', ...args);
+    }
+}
+
+async function initializeData() {
+    try {
+        debugLog('Iniciando inicialização dos dados...');
+        const response = await fetch(`${API_BASE_URL}/init-data`);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.details || data.error || response.statusText);
+        }
+        
+        debugLog('Dados inicializados:', data);
+        return true;
+    } catch (error) {
+        console.error('Erro na inicialização:', error);
+        if (characterGrid) {
+            characterGrid.innerHTML = `<p>Erro ao inicializar dados: ${error.message}</p>`;
+        }
+        return false;
+    }
+}
+
 async function generateMixesIfNeeded() {
     try {
+        console.log('Iniciando geração dos mixes...');
         const response = await fetch('/api/force-generate-mixes', {
             method: 'POST'
         });
         
+        const data = await response.json();
+        
         if (!response.ok) {
-            throw new Error('Falha ao gerar mixes');
+            throw new Error(data.details || data.error || 'Falha ao gerar mixes');
         }
         
-        const data = await response.json();
         console.log('Mixes gerados com sucesso:', data);
         return true;
     } catch (error) {
         console.error('Erro ao gerar mixes:', error);
+        if (characterGrid) {
+            characterGrid.innerHTML = `<p>Erro ao gerar mixes: ${error.message}</p>`;
+        }
         return false;
     }
 }
@@ -62,33 +96,43 @@ async function selectCategory(categoryName) {
         if (characterGrid) { characterGrid.innerHTML = '<p>Carregando personagens do Mix... Aguarde.</p>'; }
 
         try {
+            console.log(`Buscando mix ${categoryKey}...`);
             const response = await fetch(apiUrl);
+            const data = await response.json();
+            
             if (!response.ok) {
                 if (response.status === 404) {
+                    console.log('Mix não encontrado, tentando gerar...');
                     // Se não encontrou os dados, tenta gerar os mixes
                     const generated = await generateMixesIfNeeded();
                     if (generated) {
+                        console.log('Mixes gerados, tentando buscar novamente...');
                         // Tenta buscar novamente após gerar
                         const retryResponse = await fetch(apiUrl);
+                        const retryData = await retryResponse.json();
+                        
                         if (retryResponse.ok) {
-                            charactersToDisplay = await retryResponse.json();
+                            charactersToDisplay = retryData;
                             maxPointsForCategory = Math.min(50, charactersToDisplay.length);
+                            console.log(`Mix ${categoryKey} carregado com sucesso: ${charactersToDisplay.length} personagens`);
                         } else {
-                            throw new Error('Falha ao buscar mixes após geração');
+                            throw new Error(retryData.details || retryData.error || 'Falha ao buscar mixes após geração');
                         }
                     } else {
                         throw new Error('Falha ao gerar mixes');
                     }
                 } else {
-                    throw new Error('Erro ao buscar mixes');
+                    throw new Error(data.details || data.error || 'Erro ao buscar mixes');
                 }
             } else {
-                charactersToDisplay = await response.json();
+                charactersToDisplay = data;
                 maxPointsForCategory = Math.min(50, charactersToDisplay.length);
+                console.log(`Mix ${categoryKey} carregado com sucesso: ${charactersToDisplay.length} personagens`);
             }
         } catch (error) {
+            console.error(`Erro ao carregar mix ${categoryName}:`, error);
             if (characterGrid) { 
-                characterGrid.innerHTML = `<p>Erro ao carregar o Mix ${categoryName}. ${error.message}</p>`;
+                characterGrid.innerHTML = `<p>Erro ao carregar o Mix ${categoryName}: ${error.message}</p>`;
             }
             charactersToDisplay = [];
             maxPointsForCategory = 0;
@@ -281,10 +325,12 @@ function setupEventListeners() {
   if (mainControlButtons.length >= 2) {
     let resetButton = null;
     let backButton = null;
+    let randomButton = null;
 
     for (const btn of mainControlButtons) {
       if (btn.textContent.trim() === 'Resetar Personagens') resetButton = btn;
       if (btn.textContent.trim() === 'Voltar ao Menu') backButton = btn;
+      if (btn.textContent.trim() === 'Escolher Aleatoriamente') randomButton = btn;
     }
 
     if (resetButton) {
@@ -295,8 +341,12 @@ function setupEventListeners() {
       backButton.addEventListener('click', goBackToMenu);
     } else { console.warn("Botão Voltar ao Menu não encontrado pelo texto."); }
 
+    if (randomButton) {
+      randomButton.addEventListener('click', selectRandomCharacter);
+    } else { console.warn("Botão Escolher Aleatoriamente não encontrado pelo texto."); }
+
   } else {
-    console.warn("Botões de controle principal (Resetar/Voltar) não encontrados ou insuficientes.");
+    console.warn("Botões de controle principal não encontrados ou insuficientes.");
   }
 
   const dropdownItems = document.querySelectorAll('#categoryDropdown .dropdown-item');
@@ -314,72 +364,131 @@ function setupEventListeners() {
 }
 
 function startGame() {
-  // Esconde o menu inicial
-  const startMenu = document.getElementById('startMenu');
-  startMenu.style.opacity = '0';
-  
-  // Mostra o conteúdo do jogo
-  const mainContent = document.querySelector('main');
-  mainContent.style.display = 'flex';
-  
-  // Após o fade out do menu inicial, esconde ele e mostra o jogo
-  setTimeout(() => {
-    startMenu.style.display = 'none';
-    mainContent.style.opacity = '1';
+    // Esconde o menu inicial
+    const startMenu = document.getElementById('startMenu');
+    if (startMenu) {
+        startMenu.classList.add('hidden');
+        setTimeout(() => {
+            startMenu.style.display = 'none';
+        }, 300);
+    }
+    
+    // Mostra o conteúdo do jogo
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+        mainContent.style.display = 'flex';
+        setTimeout(() => {
+            mainContent.classList.add('visible');
+        }, 50);
+    }
+    
+    // Inicia o jogo com a categoria padrão
     selectCategory('');
-  }, 500);
 }
 
 function openCustomizationMenu() {
-  // Esconde o menu inicial
-  const startMenu = document.getElementById('startMenu');
-  startMenu.style.opacity = '0';
-  
-  // Mostra o menu de customização
-  const customizationMenu = document.getElementById('customizationMenu');
-  customizationMenu.style.display = 'flex';
-  
-  // Após o fade out do menu inicial, esconde ele e mostra o menu de customização
-  setTimeout(() => {
-    startMenu.style.display = 'none';
-    customizationMenu.style.opacity = '1';
-  }, 500);
+    // Esconde o menu inicial
+    const startMenu = document.getElementById('startMenu');
+    if (startMenu) {
+        startMenu.classList.add('hidden');
+        setTimeout(() => {
+            startMenu.style.display = 'none';
+        }, 300);
+    }
+    
+    // Mostra o menu de customização
+    const customizationMenu = document.getElementById('customizationMenu');
+    if (customizationMenu) {
+        customizationMenu.style.display = 'flex';
+        setTimeout(() => {
+            customizationMenu.classList.add('visible');
+        }, 50);
+    }
 }
 
 function backToMainMenu() {
-  // Esconde o menu de customização
-  const customizationMenu = document.getElementById('customizationMenu');
-  customizationMenu.style.opacity = '0';
-  
-  // Mostra o menu inicial
-  const startMenu = document.getElementById('startMenu');
-  startMenu.style.display = 'flex';
-  
-  // Após o fade out do menu de customização, esconde ele e mostra o menu inicial
-  setTimeout(() => {
-    customizationMenu.style.display = 'none';
-    startMenu.style.opacity = '1';
-  }, 500);
+    // Esconde o menu de customização
+    const customizationMenu = document.getElementById('customizationMenu');
+    if (customizationMenu) {
+        customizationMenu.classList.remove('visible');
+        setTimeout(() => {
+            customizationMenu.style.display = 'none';
+        }, 300);
+    }
+    
+    // Mostra o menu inicial
+    const startMenu = document.getElementById('startMenu');
+    if (startMenu) {
+        startMenu.style.display = 'flex';
+        setTimeout(() => {
+            startMenu.classList.remove('hidden');
+        }, 50);
+    }
 }
 
 function goBackToMenu() {
-  // Esconde o conteúdo do jogo
-  const mainContent = document.querySelector('main');
-  mainContent.style.opacity = '0';
+    // Esconde o conteúdo do jogo
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+        mainContent.classList.remove('visible');
+        setTimeout(() => {
+            mainContent.style.display = 'none';
+        }, 300);
+    }
+    
+    // Mostra o menu inicial
+    const startMenu = document.getElementById('startMenu');
+    if (startMenu) {
+        startMenu.style.display = 'flex';
+        setTimeout(() => {
+            startMenu.classList.remove('hidden');
+        }, 50);
+    }
+}
+
+function selectRandomCharacter() {
+  if (!currentActiveCharacterList || currentActiveCharacterList.length === 0) {
+    console.warn('Não há personagens disponíveis para seleção aleatória');
+    return;
+  }
+
+  // Se já tiver um personagem escolhido, remove a seleção
+  if (playerChosen && chosenCharacter) {
+    const currentLocked = characterGrid.querySelector('.character.locked');
+    if (currentLocked) {
+      currentLocked.classList.remove('locked');
+    }
+  }
+
+  // Seleciona um personagem aleatório
+  const randomIndex = Math.floor(Math.random() * currentActiveCharacterList.length);
+  const randomChar = currentActiveCharacterList[randomIndex];
   
-  // Mostra o menu inicial
-  const startMenu = document.getElementById('startMenu');
-  startMenu.style.display = 'flex';
-  
-  // Após o fade out do jogo, esconde ele e mostra o menu inicial
-  setTimeout(() => {
-    mainContent.style.display = 'none';
-    startMenu.style.opacity = '1';
-  }, 500);
+  // Atualiza o estado
+  playerChosen = true;
+  chosenCharacter = randomChar;
+
+  // Atualiza a UI
+  if (chosenCharacterBox) {
+    chosenCharacterBox.innerHTML = `<img src="${randomChar.image}" alt="${randomChar.name}">`;
+  }
+
+  // Marca o personagem como selecionado na grid
+  const allCharacters = characterGrid.querySelectorAll('.character');
+  allCharacters.forEach(charDiv => {
+    if (charDiv.title === randomChar.name) {
+      charDiv.classList.add('locked');
+    }
+  });
+
+  // Atualiza o contador
+  updateCounter(currentActiveMaxPoints);
 }
 
 function resetCharacters() {
   usedPoints = 0;
+  playerChosen = false;
+  chosenCharacter = null;
 
   if (chosenCharacterBox) {
     chosenCharacterBox.innerHTML = '';
@@ -422,3 +531,20 @@ function createPSPBackground() {
     waves.appendChild(wave);
   }
 }
+
+// Adicionar no final do arquivo, antes do último fechamento de chave
+document.getElementById('regenerateMixesButton')?.addEventListener('click', async () => {
+    if (characterGrid) {
+        characterGrid.innerHTML = '<p>Regenerando mixes... Aguarde.</p>';
+    }
+    const success = await generateMixesIfNeeded();
+    if (success) {
+        alert('Mixes regenerados com sucesso!');
+        const currentCategory = selectedCategory?.textContent;
+        if (currentCategory) {
+            selectCategory(currentCategory);
+        }
+    } else {
+        alert('Erro ao regenerar mixes. Tente novamente mais tarde.');
+    }
+});

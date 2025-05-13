@@ -4,9 +4,5 @@
         "path": "/api/scheduled/generate-mixes",
         "schedule": "0 0 * * *"
       }
-    ],
-    "env": {
-      "KV_REST_API_URL": "https://devoted-reptile-26865.upstash.io/",
-      "KV_REST_API_TOKEN": "AWjxAAIjcDFlYzQzOGU3ZGNjM2U0ZGExOWJjZjdkYjM5ZGY2MWZkMnAxMA"
-    }
+    ]
   }

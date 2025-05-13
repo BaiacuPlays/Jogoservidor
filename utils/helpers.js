@@ -1,16 +1,19 @@
 // utils/helpers.js
 
 export function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
+    return newArray;
 }
 
 export function getRandomCharacters(sourceArray, count) {
-    if (sourceArray.length === 0) return [];
+    if (!Array.isArray(sourceArray) || sourceArray.length === 0) {
+        console.warn('Array de origem inválido ou vazio');
+        return [];
+    }
     const numToPick = Math.min(count, sourceArray.length);
-    const shuffled = [...sourceArray];
-    shuffleArray(shuffled);
-    return shuffled.slice(0, numToPick);
+    return shuffleArray(sourceArray).slice(0, numToPick);
 }

@@ -38,12 +38,15 @@
 
   <main style="display: none;">
     <header>
-      <h1>Jogo muito legal e divertido</h1>
+      <h1>Pizzaria del Gatito, the game</h1>
       <div class="controls">
-        <div id="point-counter">Personagens restantes: 50</div>
+        <div id="point-counter">Personagens restantes: 128</div>
         <div class="dropdown">
           <button id="categoryButton" class="menu-button small">
-            <span id="selectedCategoryText">Categoria: <span id="selectedCategory">Todos</span></span>
+            <div class="button-content">
+              <span>Categoria: <span id="selectedCategory">Todos</span></span>
+              <span class="arrow"></span>
+            </div>
           </button>
           <div id="categoryDropdown" class="dropdown-content">
             <div class="scroll-indicator top"></div>
@@ -59,8 +62,10 @@
           </div>
         </div>
 
+        <button class="menu-button small" id="randomCharacterButton">Escolher Aleatoriamente</button>
         <button class="menu-button small">Resetar Personagens</button>
         <button class="menu-button small">Voltar ao Menu</button>
+        <button class="menu-button small" id="regenerateMixesButton">Regenerar Mixes</button>
       </div>
     </header>
 

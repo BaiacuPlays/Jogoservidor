@@ -1,6 +1,6 @@
 const DEBUG = true;
-const API_BASE_URL = '/api';
-const maxPoints = 200;
+const API_BASE_URL = '';
+const maxPoints = 180;
 let usedPoints = 0;
 let playerChosen = false;
 let chosenCharacter = null;
@@ -24,7 +24,7 @@ function debugLog(...args) {
 async function initializeData() {
     try {
         debugLog('Iniciando inicialização dos dados...');
-        const response = await fetch(`${API_BASE_URL}/init-data`);
+        const response = await fetch(`${API_BASE_URL}/api/init-data`);
         const data = await response.json();
         
         if (!response.ok) {
@@ -261,6 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (categoryButton && categoryDropdown) {
     categoryButton.addEventListener('click', function (event) {
+      event.preventDefault();
       event.stopPropagation();
       categoryDropdown.classList.toggle('show');
       if (categoryDropdown.classList.contains('show')) {
@@ -281,9 +282,22 @@ document.addEventListener('DOMContentLoaded', function () {
     // Fechar o dropdown quando selecionar um item
     const dropdownItems = categoryDropdown.querySelectorAll('.dropdown-item');
     dropdownItems.forEach(item => {
-      item.addEventListener('click', function () {
+      item.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
         categoryDropdown.classList.remove('show');
+        selectCategory(this.textContent);
       });
+    });
+  }
+
+  // Adicionar handler específico para o botão Voltar ao Menu
+  const backToMenuButton = document.querySelector('button.menu-button.small:last-of-type');
+  if (backToMenuButton) {
+    backToMenuButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      showMenu('startMenu');
     });
   }
 
@@ -425,11 +439,17 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!lobbyNick.value) return;
       lobbyStatus.textContent = 'Criando sala...';
       try {
-        const res = await fetch('/api/lobby', {
+        const res = await fetch(`${API_BASE_URL}/api/lobby`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ nickname: lobbyNick.value })
         });
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Erro ao criar sala');
+        }
+        
         const data = await res.json();
         if (data.roomCode) {
           currentRoomCode = data.roomCode;
@@ -441,10 +461,11 @@ document.addEventListener('DOMContentLoaded', function () {
           if (joinLobbyBtn) joinLobbyBtn.style.display = 'none';
           if (createLobbyBtn) createLobbyBtn.style.display = 'none';
         } else {
-          lobbyStatus.innerHTML = '<span style="color:red">Erro ao criar sala.</span>';
+          throw new Error('Resposta inválida do servidor');
         }
       } catch (err) {
-        lobbyStatus.innerHTML = '<span style="color:red">Erro ao criar sala.</span>';
+        console.error('Erro ao criar sala:', err);
+        lobbyStatus.innerHTML = `<span style="color:red">Erro ao criar sala: ${err.message}</span>`;
       }
     });
   }
@@ -868,6 +889,24 @@ function startMidnightCheck() {
     }, 60000); // 60000 ms = 1 minuto
 }
 
+// Função para carregar as configurações salvas
+function loadSettings() {
+    try {
+        // Carrega as configurações do localStorage
+        const savedSettings = localStorage.getItem('gameSettings');
+        if (savedSettings) {
+            const settings = JSON.parse(savedSettings);
+            // Aplica as configurações carregadas
+            if (settings.theme) {
+                document.body.className = settings.theme;
+            }
+            // Adicione aqui outras configurações que você queira carregar
+        }
+    } catch (error) {
+        console.error('Erro ao carregar configurações:', error);
+    }
+}
+
 // Função para inicializar o jogo
 async function initializeGame() {
     try {
@@ -880,11 +919,46 @@ async function initializeGame() {
         // Carrega as configurações salvas
         loadSettings();
         
-        // Inicializa o jogo
-        initializeGameState();
+        // Inicializa os elementos da interface
+        const categoryButton = document.getElementById('categoryButton');
+        const categoryDropdown = document.getElementById('categoryDropdown');
         
-        // Adiciona os event listeners
-        addEventListeners();
+        if (categoryButton && categoryDropdown) {
+            // Remove event listeners antigos para evitar duplicação
+            const newCategoryButton = categoryButton.cloneNode(true);
+            categoryButton.parentNode.replaceChild(newCategoryButton, categoryButton);
+            
+            const newCategoryDropdown = categoryDropdown.cloneNode(true);
+            categoryDropdown.parentNode.replaceChild(newCategoryDropdown, categoryDropdown);
+            
+            // Adiciona os event listeners novamente
+            newCategoryButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                newCategoryDropdown.classList.toggle('show');
+                if (newCategoryDropdown.classList.contains('show')) {
+                    updateScrollIndicators();
+                }
+            });
+            
+            // Fechar o dropdown quando clicar fora
+            document.addEventListener('click', function(event) {
+                if (!newCategoryButton.contains(event.target) && !newCategoryDropdown.contains(event.target)) {
+                    newCategoryDropdown.classList.remove('show');
+                }
+            });
+            
+            // Fechar o dropdown quando selecionar um item
+            const dropdownItems = newCategoryDropdown.querySelectorAll('.dropdown-item');
+            dropdownItems.forEach(item => {
+                item.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    newCategoryDropdown.classList.remove('show');
+                    selectCategory(this.textContent);
+                });
+            });
+        }
         
         console.log('Jogo inicializado com sucesso!');
     } catch (error) {

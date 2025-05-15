@@ -1,14 +1,15 @@
 {
-  "name": "pizzaria-del-gatito",
+  "name": "jogo-lobby-online",
   "version": "1.0.0",
-  "description": "Pizzaria del Gatito, the game",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "dev": "vercel dev",
-    "deploy": "vercel deploy",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
-    "@vercel/kv": "^3.0.0"
+    "next": "14.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   }
 }

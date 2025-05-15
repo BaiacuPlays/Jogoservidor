@@ -259,6 +259,20 @@ document.addEventListener('DOMContentLoaded', function () {
   setupEventListeners();
   updateCounter(maxPoints);
   createPSPBackground();
+  monitorWaveAnimations();
+  monitorThemeChanges();
+  // Ao carregar, mostra as ondas apenas se o menu principal ou de opções estiver visível
+  const mainContent = document.querySelector('main');
+  if (mainContent && (mainContent.style.display === 'flex' || mainContent.classList.contains('visible'))) {
+    showPSPWaves(false);
+  } else {
+    showPSPWaves(true);
+  }
+  // Garante pointer-events correto no carregamento
+  const waves = document.querySelector('.psp-waves');
+  if (waves && waves.style.opacity === '0') {
+    waves.style.pointerEvents = 'none';
+  }
 });
 
 function updateScrollIndicators() {
@@ -363,7 +377,21 @@ function setupEventListeners() {
   }
 }
 
+function showPSPWaves(show) {
+  const waves = document.querySelector('.psp-waves');
+  if (waves) {
+    if (show) {
+      waves.style.opacity = '1';
+      setTimeout(() => { waves.style.pointerEvents = 'auto'; }, 600);
+    } else {
+      waves.style.opacity = '0';
+      setTimeout(() => { waves.style.pointerEvents = 'none'; }, 600);
+    }
+  }
+}
+
 function startGame() {
+    debugLog('Iniciando transição para o jogo');
     // Esconde o menu inicial
     const startMenu = document.getElementById('startMenu');
     if (startMenu) {
@@ -372,7 +400,8 @@ function startGame() {
             startMenu.style.display = 'none';
         }, 300);
     }
-    
+    // Esconde as ondas PSP com transição
+    showPSPWaves(false);
     // Mostra o conteúdo do jogo
     const mainContent = document.querySelector('main');
     if (mainContent) {
@@ -381,12 +410,12 @@ function startGame() {
             mainContent.classList.add('visible');
         }, 50);
     }
-    
     // Inicia o jogo com a categoria padrão
     selectCategory('');
 }
 
 function openCustomizationMenu() {
+    debugLog('Iniciando transição para o menu de customização');
     // Esconde o menu inicial
     const startMenu = document.getElementById('startMenu');
     if (startMenu) {
@@ -395,7 +424,8 @@ function openCustomizationMenu() {
             startMenu.style.display = 'none';
         }, 300);
     }
-    
+    // Mostra as ondas PSP com transição
+    showPSPWaves(true);
     // Mostra o menu de customização
     const customizationMenu = document.getElementById('customizationMenu');
     if (customizationMenu) {
@@ -407,6 +437,7 @@ function openCustomizationMenu() {
 }
 
 function backToMainMenu() {
+    debugLog('Iniciando transição de volta ao menu principal');
     // Esconde o menu de customização
     const customizationMenu = document.getElementById('customizationMenu');
     if (customizationMenu) {
@@ -415,7 +446,8 @@ function backToMainMenu() {
             customizationMenu.style.display = 'none';
         }, 300);
     }
-    
+    // Mostra as ondas PSP com transição
+    showPSPWaves(true);
     // Mostra o menu inicial
     const startMenu = document.getElementById('startMenu');
     if (startMenu) {
@@ -435,7 +467,8 @@ function goBackToMenu() {
             mainContent.style.display = 'none';
         }, 300);
     }
-    
+    // Mostra as ondas PSP com transição
+    showPSPWaves(true);
     // Mostra o menu inicial
     const startMenu = document.getElementById('startMenu');
     if (startMenu) {
@@ -516,19 +549,24 @@ document.body.className = savedTheme;
 document.getElementById('themeSelect').value = savedTheme;
 
 function createPSPBackground() {
-  const menu = document.querySelector('.centered-menu');
-  if (!menu) return;
+  debugLog('Creating PSP background waves');
+  // Remover ondas existentes se houver
+  const existingWaves = document.querySelector('.psp-waves');
+  if (existingWaves) {
+    existingWaves.remove();
+  }
 
-  // Criar container das ondas
+  // Criar container das ondas no body
   const waves = document.createElement('div');
   waves.className = 'psp-waves';
-  menu.insertBefore(waves, menu.firstChild);
+  document.body.insertBefore(waves, document.body.firstChild); // Agora no body
 
   // Criar 3 camadas de ondas
   for (let i = 0; i < 3; i++) {
     const wave = document.createElement('div');
     wave.className = 'wave';
     waves.appendChild(wave);
+    debugLog(`Created wave layer ${i + 1}`);
   }
 }
 
@@ -548,3 +586,130 @@ document.getElementById('regenerateMixesButton')?.addEventListener('click', asyn
         alert('Erro ao regenerar mixes. Tente novamente mais tarde.');
     }
 });
+
+// Função para verificar se os mixes precisam ser atualizados
+async function checkMixesUpdate() {
+    try {
+        const response = await fetch('/api/update-mixes', {
+            method: 'POST'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Falha ao verificar atualização dos mixes');
+        }
+        
+        const data = await response.json();
+        console.log('Status dos mixes:', data.message);
+        return data.timestamp;
+    } catch (error) {
+        console.error('Erro ao verificar atualização dos mixes:', error);
+        return null;
+    }
+}
+
+// Função para verificar se é meia-noite
+function isMidnight() {
+    const now = new Date();
+    return now.getHours() === 0 && now.getMinutes() === 0;
+}
+
+// Função para verificar periodicamente se é meia-noite
+function startMidnightCheck() {
+    // Verifica a cada minuto
+    setInterval(async () => {
+        if (isMidnight()) {
+            console.log('Verificando atualização dos mixes...');
+            await checkMixesUpdate();
+        }
+    }, 60000); // 60000 ms = 1 minuto
+}
+
+// Função para inicializar o jogo
+async function initializeGame() {
+    try {
+        // Verifica se os mixes precisam ser atualizados
+        await checkMixesUpdate();
+        
+        // Inicia a verificação periódica para meia-noite
+        startMidnightCheck();
+        
+        // Carrega as configurações salvas
+        loadSettings();
+        
+        // Inicializa o jogo
+        initializeGameState();
+        
+        // Adiciona os event listeners
+        addEventListeners();
+        
+        console.log('Jogo inicializado com sucesso!');
+    } catch (error) {
+        console.error('Erro ao inicializar o jogo:', error);
+    }
+}
+
+// Inicializa o jogo quando a página carregar
+document.addEventListener('DOMContentLoaded', initializeGame);
+
+function monitorWaveAnimations() {
+  debugLog('Starting wave animation monitoring');
+  
+  const waves = document.querySelectorAll('.wave');
+  waves.forEach((wave, index) => {
+    // Monitor animation events
+    wave.addEventListener('animationstart', () => {
+      debugLog(`Wave ${index + 1} animation started`);
+    });
+    
+    wave.addEventListener('animationiteration', () => {
+      debugLog(`Wave ${index + 1} animation iteration`);
+    });
+    
+    wave.addEventListener('animationend', () => {
+      debugLog(`Wave ${index + 1} animation ended`);
+    });
+
+    // Monitor computed styles
+    const observer = new MutationObserver(() => {
+      const computedStyle = window.getComputedStyle(wave);
+      const transform = computedStyle.getPropertyValue('transform');
+      const opacity = computedStyle.getPropertyValue('opacity');
+      debugLog(`Wave ${index + 1} state:`, { transform, opacity });
+    });
+
+    observer.observe(wave, {
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+  });
+}
+
+function monitorThemeChanges() {
+  debugLog('Iniciando monitoramento de mudanças de tema');
+  
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        const currentTheme = document.body.className;
+        debugLog('Tema alterado para:', currentTheme);
+        
+        const waves = document.querySelectorAll('.wave');
+        waves.forEach((wave, index) => {
+          const computedStyle = window.getComputedStyle(wave);
+          const background = computedStyle.getPropertyValue('background');
+          const opacity = computedStyle.getPropertyValue('opacity');
+          debugLog(`Wave ${index + 1} no tema ${currentTheme}:`, {
+            background,
+            opacity,
+            transform: computedStyle.getPropertyValue('transform')
+          });
+        });
+      }
+    });
+  });
+
+  observer.observe(document.body, {
+    attributes: true,
+    attributeFilter: ['class']
+  });
+}

@@ -8,11 +8,7 @@
 </head>
 <body>
   <div id="startMenu" class="centered-menu">
-    <div class="psp-waves">
-      <div class="wave"></div>
-      <div class="wave"></div>
-      <div class="wave"></div>
-    </div>
+    <!-- As ondas serão criadas pelo JS -->
     <h2>Menu Inicial</h2>
     <button class="menu-button">Começar Jogo</button>
     <button class="menu-button">Customização</button>
@@ -65,14 +61,12 @@
         <button class="menu-button small" id="randomCharacterButton">Escolher Aleatoriamente</button>
         <button class="menu-button small">Resetar Personagens</button>
         <button class="menu-button small">Voltar ao Menu</button>
-        <button class="menu-button small" id="regenerateMixesButton">Regenerar Mixes</button>
+      </div>
+      <div id="chosenDisplay">
+        <strong>Seu personagem:</strong>
+        <div class="image-container" id="chosenCharacterBox"></div>
       </div>
     </header>
-
-    <div id="chosenDisplay">
-      <strong>Seu personagem:</strong>
-      <div class="image-container" id="chosenCharacterBox"></div>
-    </div>
 
     <section class="character-grid" id="characterGrid"></section>
   </main>

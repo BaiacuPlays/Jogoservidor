@@ -704,10 +704,18 @@ body.purple .scroll-indicator.bottom {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border: 2px solid #3a3a3a;
   width: 300px;
+  position: relative;
+  z-index: 100;
 }
 
 #customizationMenu.visible {
   opacity: 1;
+  pointer-events: auto;
+}
+
+#customizationMenu.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 #customizationMenu label {

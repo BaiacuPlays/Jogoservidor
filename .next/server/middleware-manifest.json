@@ -1,6 +1,23 @@
 {
   "sortedMiddleware": [],
   "middleware": {},
-  "functions": {},
+  "functions": {
+    "/api/lobby": {
+      "files": [
+        "server/edge-runtime-webpack.js",
+        "server/pages/api/lobby.js"
+      ],
+      "name": "pages/api/lobby",
+      "page": "/api/lobby",
+      "matchers": [
+        {
+          "regexp": "^/api/lobby$",
+          "originalSource": "/api/lobby"
+        }
+      ],
+      "wasm": [],
+      "assets": []
+    }
+  },
   "version": 2
 }

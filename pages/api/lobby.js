@@ -48,107 +48,98 @@ export const config = {
   regions: ['sao1'],
 };
 
-export default async function handler(req, res) {
+export default async function handler(req) {
   // Configurar CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  const corsHeaders = {
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+    'Access-Control-Allow-Headers':
+      'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+    'Content-Type': 'application/json',
+  };
 
-  // Responder a requisições OPTIONS
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return new Response(null, { status: 200, headers: corsHeaders });
   }
 
   try {
     if (req.method === 'POST') {
-      // Criar sala
-      const { nickname } = req.body;
+      const body = await req.json();
+      const { nickname } = body;
       if (!nickname) {
-        return res.status(400).json({ error: 'Nickname é obrigatório.' });
+        return new Response(JSON.stringify({ error: 'Nickname é obrigatório.' }), { status: 400, headers: corsHeaders });
       }
-
       let roomCode;
       let existingLobby;
       do {
         roomCode = generateRoomCode();
         existingLobby = await kv.get(`lobby:${roomCode}`);
       } while (existingLobby);
-
       const lobby = {
         players: [nickname],
         created: Date.now()
       };
-
       await kv.set(`lobby:${roomCode}`, lobby);
-      return res.status(200).json({ roomCode });
+      return new Response(JSON.stringify({ roomCode }), { status: 200, headers: corsHeaders });
     }
 
     if (req.method === 'PUT') {
-      // Entrar em sala
-      const { nickname, roomCode } = req.body;
+      const body = await req.json();
+      const { nickname, roomCode } = body;
       if (!nickname || !roomCode) {
-        return res.status(400).json({ error: 'Nickname e código da sala são obrigatórios.' });
+        return new Response(JSON.stringify({ error: 'Nickname e código da sala são obrigatórios.' }), { status: 400, headers: corsHeaders });
       }
-
       const lobby = await kv.get(`lobby:${roomCode}`);
       if (!lobby) {
-        return res.status(404).json({ error: 'Sala não encontrada.' });
+        return new Response(JSON.stringify({ error: 'Sala não encontrada.' }), { status: 404, headers: corsHeaders });
       }
-
       if (!lobby.players.includes(nickname)) {
         lobby.players.push(nickname);
         await kv.set(`lobby:${roomCode}`, lobby);
       }
-
-      return res.status(200).json({ success: true });
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
     }
 
     if (req.method === 'PATCH') {
-      // Iniciar jogo e sortear nicks
-      const { roomCode, action } = req.body;
+      const body = await req.json();
+      const { roomCode, action } = body;
       if (!roomCode || action !== 'start') {
-        return res.status(400).json({ error: 'Parâmetros inválidos.' });
+        return new Response(JSON.stringify({ error: 'Parâmetros inválidos.' }), { status: 400, headers: corsHeaders });
       }
-
       const lobby = await kv.get(`lobby:${roomCode}`);
       if (!lobby || !lobby.players || lobby.players.length < 3) {
-        return res.status(400).json({ error: 'Sala inválida ou jogadores insuficientes.' });
+        return new Response(JSON.stringify({ error: 'Sala inválida ou jogadores insuficientes.' }), { status: 400, headers: corsHeaders });
       }
-
       lobby.sorteio = sortearNicks(lobby.players);
       lobby.started = true;
       await kv.set(`lobby:${roomCode}`, lobby);
-
-      return res.status(200).json({ success: true });
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
     }
 
     if (req.method === 'GET') {
-      // Listar jogadores da sala
-      const { roomCode } = req.query;
+      const { searchParams } = new URL(req.url);
+      const roomCode = searchParams.get('roomCode');
       if (!roomCode) {
-        return res.status(400).json({ error: 'Código da sala é obrigatório.' });
+        return new Response(JSON.stringify({ error: 'Código da sala é obrigatório.' }), { status: 400, headers: corsHeaders });
       }
-
       const lobby = await kv.get(`lobby:${roomCode}`);
       if (!lobby) {
-        return res.status(404).json({ error: 'Sala não encontrada.' });
+        return new Response(JSON.stringify({ error: 'Sala não encontrada.' }), { status: 404, headers: corsHeaders });
       }
-
-      return res.status(200).json({
-        players: lobby.players,
-        started: lobby.started || false,
-        sorteio: lobby.sorteio || null
-      });
+      return new Response(
+        JSON.stringify({
+          players: lobby.players,
+          started: lobby.started || false,
+          sorteio: lobby.sorteio || null
+        }),
+        { status: 200, headers: corsHeaders }
+      );
     }
 
-    return res.status(405).json({ error: 'Método não permitido.' });
+    return new Response(JSON.stringify({ error: 'Método não permitido.' }), { status: 405, headers: corsHeaders });
   } catch (error) {
     console.error('Erro na API de lobby:', error);
-    return res.status(500).json({ error: 'Erro interno do servidor.' });
+    return new Response(JSON.stringify({ error: 'Erro interno do servidor.' }), { status: 500, headers: corsHeaders });
   }
 } 

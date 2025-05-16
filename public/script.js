@@ -345,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   if (customizationButton) {
     customizationButton.addEventListener('click', function () {
-      showMenu('customizationMenu');
+      openCustomizationMenu();
     });
   }
   // Lobby
@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Customização
   if (backToMenuFromCustomization) {
     backToMenuFromCustomization.addEventListener('click', function () {
-      showMenu('startMenu');
+      backToMainMenu();
     });
   }
   // Jogo (main)
@@ -695,6 +695,7 @@ function openCustomizationMenu() {
     const customizationMenu = document.getElementById('customizationMenu');
     if (customizationMenu) {
         customizationMenu.style.display = 'flex';
+        customizationMenu.classList.remove('hidden');
         setTimeout(() => {
             customizationMenu.classList.add('visible');
         }, 50);
@@ -709,6 +710,7 @@ function backToMainMenu() {
         customizationMenu.classList.remove('visible');
         setTimeout(() => {
             customizationMenu.style.display = 'none';
+            customizationMenu.classList.add('hidden');
         }, 300);
     }
     // Mostra as ondas PSP com transição
@@ -717,9 +719,7 @@ function backToMainMenu() {
     const startMenu = document.getElementById('startMenu');
     if (startMenu) {
         startMenu.style.display = 'flex';
-        setTimeout(() => {
-            startMenu.classList.remove('hidden');
-        }, 50);
+        startMenu.classList.remove('hidden');
     }
 }
 

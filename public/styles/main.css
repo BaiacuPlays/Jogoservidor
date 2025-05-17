@@ -101,4 +101,32 @@
   border-radius: 12px;
   display: block;
   margin: 0 auto;
+}
+#chosenCharacterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 16px;
+}
+#chosenCharacterHeader .chosen-header-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  border: 2px solid #dde2f1;
+  background: #222;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+#chosenCharacterHeader .placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  border: 2px solid #dde2f1;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dde2f1;
+  font-size: 0.9em;
+  opacity: 0.5;
 } 

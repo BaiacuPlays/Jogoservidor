@@ -226,6 +226,8 @@ function createCharacterGridInternal() {
       characterGrid.innerHTML = `<p>Nenhum personagem encontrado para "${selectedCategory.textContent}".</p>`;
     }
   }
+
+  updateChosenCharacterHeader();
 }
 
 function updateCounter(max) {
@@ -797,6 +799,8 @@ function selectRandomCharacter() {
 
   // Atualiza o contador
   updateCounter(currentActiveMaxPoints);
+
+  updateChosenCharacterHeader();
 }
 
 function resetCharacters() {
@@ -822,6 +826,8 @@ function resetCharacters() {
   if (chosenCharacter && chosenCharacterBox) {
     chosenCharacterBox.innerHTML = `<img src="${chosenCharacter.image}" alt="${chosenCharacter.name}">`;
   }
+
+  updateChosenCharacterHeader();
 }
 
 // Carregar tema salvo
@@ -1157,6 +1163,8 @@ async function mostrarNickSorteadoNoJogo() {
   } catch (err) {
     console.error('Erro ao mostrar nick sorteado:', err);
   }
+
+  updateChosenCharacterHeader();
 }
 
 // Chamar ao carregar o jogo
@@ -1196,3 +1204,14 @@ document.addEventListener('DOMContentLoaded', () => {
     startGamePolling();
   }
 });
+
+// Função para atualizar o personagem escolhido no header
+function updateChosenCharacterHeader() {
+  const chosenHeader = document.getElementById('chosenCharacterHeader');
+  if (!chosenHeader) return;
+  if (chosenCharacter && chosenCharacter.image) {
+    chosenHeader.innerHTML = `<img src="${chosenCharacter.image}" alt="Seu personagem" class="chosen-header-img" title="Seu personagem">`;
+  } else {
+    chosenHeader.innerHTML = `<div class="placeholder" title="Seu personagem">?</div>`;
+  }
+}

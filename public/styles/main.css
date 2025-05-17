@@ -52,4 +52,26 @@
 
 .game-info #leaveGameBtn:hover {
   background: #f55;
+}
+
+.game-flex-row {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+@media (max-width: 600px) {
+  .game-flex-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+#gameInfo {
+  min-width: 220px;
+  max-width: 300px;
+}
+#chosenDisplay {
+  min-width: 180px;
+  max-width: 220px;
 } 

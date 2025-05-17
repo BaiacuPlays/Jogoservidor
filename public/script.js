@@ -1057,40 +1057,6 @@ function getQueryParam(param) {
     return urlParams.get(param);
 }
 
-async function mostrarNickSorteado() {
-    const room = getQueryParam('room');
-    const nick = getQueryParam('nick');
-    if (!room || !nick) return;
-
-    try {
-        const res = await fetch(`/api/lobby?roomCode=${room}`);
-        const data = await res.json();
-        if (data && data.players && data.started && data.sorteio && data.sorteio[nick]) {
-            const sorteado = data.sorteio[nick];
-            // Cria ou atualiza o elemento de exibição do nick sorteado
-            let sorteadoDiv = document.getElementById('nick-sorteado-info');
-            if (!sorteadoDiv) {
-                sorteadoDiv = document.createElement('div');
-                sorteadoDiv.id = 'nick-sorteado-info';
-                sorteadoDiv.style.marginTop = '12px';
-                sorteadoDiv.style.fontSize = '1.1em';
-                sorteadoDiv.style.fontWeight = 'bold';
-                sorteadoDiv.style.color = '#2a7';
-                // Insere logo após o botão Voltar ao Menu
-                const controls = document.querySelector('header .controls');
-                if (controls) {
-                    controls.parentNode.insertBefore(sorteadoDiv, controls.nextSibling);
-                }
-            }
-            sorteadoDiv.textContent = `Você deve adivinhar o personagem de: ${sorteado}`;
-        }
-    } catch (err) {
-        console.error('Erro ao buscar nick sorteado:', err);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', mostrarNickSorteado);
-
 // Exibir nick sorteado no jogo (main)
 async function mostrarNickSorteadoNoJogo() {
   const urlRoom = getQueryParam('room');
@@ -1171,6 +1137,19 @@ async function mostrarNickSorteadoNoJogo() {
             }
           });
         }
+
+        const isMyTurn = currentTurn === urlNick;
+        if (isMyTurn) {
+          html += `<button id="nextTurnBtn" class="menu-button small">Passar a vez</button>`;
+        }
+      }
+
+      // Após adicionar os outros event listeners:
+      const nextTurnBtn = document.getElementById('nextTurnBtn');
+      if (nextTurnBtn) {
+        nextTurnBtn.addEventListener('click', async () => {
+          await nextTurn();
+        });
       }
     }
   } catch (err) {

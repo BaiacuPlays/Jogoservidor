@@ -1,12 +1,17 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import fs from 'fs';
+import path from 'path';
 
-export default function Home() {
-  const router = useRouter();
+export default function Home({ html }) {
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+}
 
-  useEffect(() => {
-    router.push('/jogo');
-  }, []);
-
-  return null;
+export async function getStaticProps() {
+  const filePath = path.join(process.cwd(), 'public', 'index.html');
+  const html = fs.readFileSync(filePath, 'utf8');
+  
+  return {
+    props: {
+      html,
+    },
+  };
 } 

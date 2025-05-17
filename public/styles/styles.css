@@ -13,6 +13,7 @@ body {
   transform: scale(var(--interface-scale));
   transform-origin: top left;
   transition: transform 0.3s ease;
+  overflow-x: hidden;
 }
 
 header {
@@ -209,17 +210,17 @@ body.dark .wave {
 
 /* Ajustes para o tema claro */
 body.light .psp-waves {
-  background: #f5f5f5;
+  background: #ffffff;
 }
 
 body.light .wave {
   background: linear-gradient(
     90deg,
-    rgba(180,180,180,0) 0%,
-    rgba(180,180,180,0.10) 20%,
-    rgba(180,180,180,0.13) 50%,
-    rgba(180,180,180,0.10) 80%,
-    rgba(180,180,180,0) 100%
+    rgba(167, 167, 167, 0) 0%,
+    rgba(160,160,160,0.10) 20%,
+    rgba(160,160,160,0.13) 50%,
+    rgba(160,160,160,0.10) 80%,
+    rgba(160,160,160,0) 100%
   );
   filter: blur(4px) brightness(1);
 }
@@ -290,6 +291,7 @@ body.purple .wave {
 /* Ajustes para o tema claro */
 body.light .centered-menu {
   background: #f5f5f5;
+
 }
 
 body.dark .centered-menu {
@@ -361,8 +363,8 @@ body.light header * {
   background: transparent !important;
   opacity: 1 !important;
   visibility: visible !important;
-  display: block !important;
   z-index: 100 !important;
+  
 }
 
 body.dark header {
@@ -419,8 +421,6 @@ body.light #chosenCharacterBox {
   border: 2px solid #e0e0e0;
   background: #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  border: 2px solid gray;
-  
 }
 
 body.dark #chosenCharacterBox {
@@ -452,6 +452,7 @@ body.dark .dropdown-item {
 
 body.light .dropdown-item:hover {
   background-color: #f0f0f0;
+  opacity: 1;
 }
 
 body.dark .dropdown-item:hover {
@@ -463,6 +464,10 @@ body.light #customizationMenu {
   display: none;
   opacity: 1;
   transition: opacity 0.3s ease;
+  
+  h2{
+    color: white;
+  }
 }
 
 body.dark #customizationMenu {
@@ -472,7 +477,7 @@ body.dark #customizationMenu {
 }
 
 body.light #customizationMenu label {
-  color: #333;
+  color: #e0e0e0;
 }
 
 body.dark #customizationMenu label {
@@ -500,7 +505,7 @@ body.dark #customizationMenu select:hover {
 }
 
 body.light #scaleRange {
-  background: #e0e0e0;
+  background: #e0e0e0bb;
 }
 
 body.dark #scaleRange {
@@ -508,7 +513,7 @@ body.dark #scaleRange {
 }
 
 body.light .scale-value {
-  color: #666;
+  color: #e0e0e0;
 }
 
 body.dark .scale-value {
@@ -903,8 +908,9 @@ body.purple .scroll-indicator.bottom {
 
 /* Ajustes para os temas */
 body.light #categoryButton {
-  background-color: #e0e0e0;
+  background-color: #d0d0d0; /* Define um tom de cinza um pouco mais escuro */
   color: #333;
+  border: 1px solid #d0d0d0;
 }
 
 body.light .arrow {

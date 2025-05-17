@@ -4,6 +4,7 @@ const maxPoints = 180;
 let usedPoints = 0;
 let playerChosen = false;
 let chosenCharacter = null;
+let currentCategory = 'Todos';
 
 const characterGrid = document.getElementById('characterGrid');
 const chosenCharacterBox = document.getElementById('chosenCharacterBox');
@@ -67,7 +68,12 @@ async function generateMixesIfNeeded() {
 }
 
 async function selectCategory(categoryName) {
-    if (selectedCategory) { selectedCategory.textContent = categoryName; }
+  const currentCategoryNameElement = document.getElementById('selectedCategory');
+  if (currentCategoryNameElement) {
+  currentCategoryNameElement.textContent = categoryName;
+  }
+    currentCategory = categoryName || 'Todos';
+    if (selectedCategory) { selectedCategory.textContent = currentCategory; }
     if (characterGrid) { characterGrid.innerHTML = ''; }
     
     // Esconde a seção do personagem escolhido durante o carregamento
@@ -198,6 +204,7 @@ function createCharacterGridInternal() {
           }
         } else {
           if (charDiv.classList.contains('locked')) {
+            // Não permite desmarcar o personagem escolhido
           } else if (charDiv.classList.contains('selected')) {
             charDiv.classList.remove('selected');
             usedPoints--;
@@ -279,6 +286,10 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
+    const initialCategoryElement = document.getElementById('selectedCategory');
+if (initialCategoryElement) {
+initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
+}
     // Fechar o dropdown quando selecionar um item
     const dropdownItems = categoryDropdown.querySelectorAll('.dropdown-item');
     dropdownItems.forEach(item => {
@@ -335,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (playLocalButton) {
     playLocalButton.addEventListener('click', function () {
       showMenu('main');
-      selectCategory('');
+      selectCategory(currentCategory);
     });
   }
   if (playOnlineButton) {
@@ -537,6 +548,8 @@ document.addEventListener('DOMContentLoaded', function () {
     showMenu('main');
     selectCategory('');
   }
+
+  selectCategory(currentCategory);
 });
 
 function updateScrollIndicators() {

@@ -32,9 +32,6 @@ const nextConfig = {
   },
   // Configuração para exportação estática
   output: 'standalone',
-  experimental: {
-    serverActions: true,
-  },
 }
 
 module.exports = nextConfig 

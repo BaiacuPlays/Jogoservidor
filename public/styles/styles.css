@@ -554,6 +554,7 @@ body.dark #point-counter {
   position: relative;
   display: inline-block;
   width: 100%;
+  overflow-x: hidden;
 }
 
 .dropdown button {
@@ -589,10 +590,12 @@ body.dark #point-counter {
 .dropdown-content {
   -ms-overflow-style: none;
   scrollbar-width: none;
+  overflow-y: hidden;
 }
 
 .dropdown-content.show {
   display: block;
+  overflow-y: hidden;
 }
 
 /* Ajuste para o tema claro */
@@ -1310,6 +1313,7 @@ body.purple #scaleRange::-moz-range-thumb {
   align-items: stretch;
   box-shadow: 0 2px 16px rgba(0,0,0,0.12);
   float: left;
+  overflow-x: hidden;
 }
 @media (max-width: 900px) {
   .side-panel {

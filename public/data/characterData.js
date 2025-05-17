@@ -180,6 +180,7 @@ export const characters = [
     { name: "Dixie Kong", image: "/imagens/dixie.webp" },
     { name: "Dry Bones", image: "/imagens/dry.jpg" },
     { name: "Birdo", image: "/imagens/birdo.jpg" },
+    { name: "Flora", image: "/imagens/flora.jpg" },
   ];
 
 export const uniqueCharacters = characters.filter((char, index, self) =>
@@ -205,6 +206,6 @@ export const anthropomorphicCharacters = [
 'Niko', 'Rain World', 'Hammer Bro', 'Krystal', 'Koopa', 'Petey Piranha', 'Transformice', 'Yoshi', 'Jigglypuff', 
 'Pichu', 'Conker', 'Cranky Kong', 'King Dedede', 'Bulbasaur', 'Charmander', 'Squirtle', 
 'Mew', 'Gardevoir', 'Snorlax', 'Ditto', 'Vaporeon', 
-'Jolteon', 'Flareon', 'Espeon', 'Umbreon', 'Absol', 'Kamek', 'Dixie Kong', 'Birdo'
+'Jolteon', 'Flareon', 'Espeon', 'Umbreon', 'Absol', 'Kamek', 'Dixie Kong', 'Birdo', 'Flora'
 
 ];

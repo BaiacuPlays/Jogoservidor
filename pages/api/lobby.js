@@ -78,7 +78,10 @@ export default async function handler(req) {
       } while (existingLobby);
       const lobby = {
         players: [nickname],
-        created: Date.now()
+        created: Date.now(),
+        host: nickname,
+        currentTurn: null,
+        round: 1
       };
       await kv.set(`lobby:${roomCode}`, lobby);
       return new Response(JSON.stringify({ roomCode }), { status: 200, headers: corsHeaders });
@@ -103,18 +106,72 @@ export default async function handler(req) {
 
     if (req.method === 'PATCH') {
       const body = await req.json();
-      const { roomCode, action } = body;
-      if (!roomCode || action !== 'start') {
-        return new Response(JSON.stringify({ error: 'Parâmetros inválidos.' }), { status: 400, headers: corsHeaders });
+      const { roomCode, action, nickname } = body;
+      
+      if (!roomCode) {
+        return new Response(JSON.stringify({ error: 'Código da sala é obrigatório.' }), { status: 400, headers: corsHeaders });
       }
+
       const lobby = await kv.get(`lobby:${roomCode}`);
-      if (!lobby || !lobby.players || lobby.players.length < 3) {
-        return new Response(JSON.stringify({ error: 'Sala inválida ou jogadores insuficientes.' }), { status: 400, headers: corsHeaders });
+      if (!lobby) {
+        return new Response(JSON.stringify({ error: 'Sala não encontrada.' }), { status: 404, headers: corsHeaders });
       }
-      lobby.sorteio = sortearNicks(lobby.players);
-      lobby.started = true;
-      await kv.set(`lobby:${roomCode}`, lobby);
-      return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
+
+      if (action === 'start') {
+        if (!lobby.players || lobby.players.length < 3) {
+          return new Response(JSON.stringify({ error: 'Sala inválida ou jogadores insuficientes.' }), { status: 400, headers: corsHeaders });
+        }
+        lobby.sorteio = sortearNicks(lobby.players);
+        lobby.started = true;
+        lobby.currentTurn = lobby.players[0]; // Primeiro jogador começa
+        await kv.set(`lobby:${roomCode}`, lobby);
+        return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
+      }
+
+      if (action === 'next_turn') {
+        if (!lobby.started) {
+          return new Response(JSON.stringify({ error: 'Jogo não iniciado.' }), { status: 400, headers: corsHeaders });
+        }
+        const currentIndex = lobby.players.indexOf(lobby.currentTurn);
+        const nextIndex = (currentIndex + 1) % lobby.players.length;
+        lobby.currentTurn = lobby.players[nextIndex];
+        await kv.set(`lobby:${roomCode}`, lobby);
+        return new Response(JSON.stringify({ success: true, currentTurn: lobby.currentTurn }), { status: 200, headers: corsHeaders });
+      }
+
+      if (action === 'reset_game') {
+        if (nickname !== lobby.host) {
+          return new Response(JSON.stringify({ error: 'Apenas o host pode resetar o jogo.' }), { status: 403, headers: corsHeaders });
+        }
+        lobby.sorteio = sortearNicks(lobby.players);
+        lobby.currentTurn = lobby.players[0];
+        lobby.round += 1;
+        await kv.set(`lobby:${roomCode}`, lobby);
+        return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
+      }
+
+      if (action === 'leave_game') {
+        if (!nickname) {
+          return new Response(JSON.stringify({ error: 'Nickname é obrigatório.' }), { status: 400, headers: corsHeaders });
+        }
+        lobby.players = lobby.players.filter(p => p !== nickname);
+        if (lobby.players.length === 0) {
+          await kv.del(`lobby:${roomCode}`);
+          return new Response(JSON.stringify({ success: true, message: 'Sala fechada.' }), { status: 200, headers: corsHeaders });
+        }
+        if (nickname === lobby.host) {
+          lobby.host = lobby.players[0];
+        }
+        if (lobby.currentTurn === nickname) {
+          const currentIndex = lobby.players.indexOf(nickname);
+          const nextIndex = (currentIndex + 1) % lobby.players.length;
+          lobby.currentTurn = lobby.players[nextIndex];
+        }
+        await kv.set(`lobby:${roomCode}`, lobby);
+        return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
+      }
+
+      return new Response(JSON.stringify({ error: 'Ação inválida.' }), { status: 400, headers: corsHeaders });
     }
 
     if (req.method === 'GET') {
@@ -131,7 +188,10 @@ export default async function handler(req) {
         JSON.stringify({
           players: lobby.players,
           started: lobby.started || false,
-          sorteio: lobby.sorteio || null
+          sorteio: lobby.sorteio || null,
+          currentTurn: lobby.currentTurn || null,
+          host: lobby.host,
+          round: lobby.round || 1
         }),
         { status: 200, headers: corsHeaders }
       );

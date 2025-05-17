@@ -83,11 +83,12 @@
 
         <button class="menu-button small" id="randomCharacterButton">Escolher Aleatoriamente</button>
         <button class="menu-button small">Resetar Personagens</button>
-        <button class="menu-button small">Voltar ao Menu</button>
+        <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
       </div>
-      <div id="chosenDisplay">
-        <strong>Seu personagem:</strong>
-        <div class="image-container" id="chosenCharacterBox"></div>
+      <div id="gameInfo"></div>
+      <div id="chosenDisplay" class="hidden">
+        <h3>Seu personagem</h3>
+        <div id="chosenCharacterBox"></div>
       </div>
     </header>
 

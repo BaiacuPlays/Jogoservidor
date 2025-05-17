@@ -194,7 +194,7 @@ function createCharacterGridInternal() {
         characterGrid.appendChild(charDiv);
       }
 
-      charDiv.onclick = () => {
+      charDiv.onclick = async () => {
         if (!playerChosen) {
           playerChosen = true;
           chosenCharacter = charObject;
@@ -202,6 +202,9 @@ function createCharacterGridInternal() {
           if (chosenCharacterBox) {
             chosenCharacterBox.innerHTML = `<img src="${charObject.image}" alt="${charObject.name}">`;
           }
+          
+          // Após escolher o personagem, passar para o próximo turno
+          await nextTurn();
         } else {
           if (charDiv.classList.contains('locked')) {
             // Não permite desmarcar o personagem escolhido
@@ -1090,35 +1093,113 @@ document.addEventListener('DOMContentLoaded', mostrarNickSorteado);
 
 // Exibir nick sorteado no jogo (main)
 async function mostrarNickSorteadoNoJogo() {
-  const room = getQueryParam('room');
-  const nick = getQueryParam('nick');
-  if (!room || !nick) return;
+  const urlRoom = getQueryParam('room');
+  const urlNick = getQueryParam('nick');
+  if (!urlRoom || !urlNick) return;
+
   try {
-    const res = await fetch(`/api/lobby?roomCode=${room}`);
+    const res = await fetch(`/api/lobby?roomCode=${urlRoom}`);
     const data = await res.json();
-    if (data && data.sorteio && data.sorteio[nick]) {
-      const sorteado = data.sorteio[nick];
-      // Exibir no local correto: abaixo do botão Voltar ao Menu e acima de "Seu personagem"
-      const controls = document.querySelector('header .controls');
-      const chosenDisplay = document.getElementById('chosenDisplay');
-      let sorteadoDiv = document.getElementById('nick-sorteado-info');
-      if (!sorteadoDiv) {
-        sorteadoDiv = document.createElement('div');
-        sorteadoDiv.id = 'nick-sorteado-info';
-        sorteadoDiv.style.margin = '16px 0 8px 0';
-        sorteadoDiv.style.fontSize = '1.1em';
-        sorteadoDiv.style.fontWeight = 'bold';
-        sorteadoDiv.style.color = '#2a7';
-        if (controls && chosenDisplay) {
-          controls.parentNode.insertBefore(sorteadoDiv, chosenDisplay);
+    
+    if (data.sorteio && data.sorteio[urlNick]) {
+      const targetNick = data.sorteio[urlNick];
+      const currentTurn = data.currentTurn;
+      const isHost = data.host === urlNick;
+      const round = data.round;
+
+      const gameInfo = document.getElementById('gameInfo');
+      if (gameInfo) {
+        let html = `<div class="game-info">`;
+        html += `<div class="round">Rodada ${round}</div>`;
+        html += `<div class="target">Você deve adivinhar: <strong>${targetNick}</strong></div>`;
+        html += `<div class="turn">Vez de: <strong>${currentTurn}</strong></div>`;
+        
+        if (isHost) {
+          html += `<button id="resetGameBtn" class="menu-button small">Resetar Partida</button>`;
+        }
+        
+        html += `<button id="leaveGameBtn" class="menu-button small">Sair do Jogo</button>`;
+        html += `</div>`;
+        
+        gameInfo.innerHTML = html;
+
+        // Adicionar eventos aos botões
+        const resetGameBtn = document.getElementById('resetGameBtn');
+        if (resetGameBtn) {
+          resetGameBtn.addEventListener('click', async () => {
+            try {
+              const res = await fetch('/api/lobby', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                  roomCode: urlRoom, 
+                  action: 'reset_game',
+                  nickname: urlNick
+                })
+              });
+              const data = await res.json();
+              if (data.success) {
+                mostrarNickSorteadoNoJogo();
+              }
+            } catch (err) {
+              console.error('Erro ao resetar jogo:', err);
+            }
+          });
+        }
+
+        const leaveGameBtn = document.getElementById('leaveGameBtn');
+        if (leaveGameBtn) {
+          leaveGameBtn.addEventListener('click', async () => {
+            if (confirm('Tem certeza que deseja sair do jogo?')) {
+              try {
+                const res = await fetch('/api/lobby', {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ 
+                    roomCode: urlRoom, 
+                    action: 'leave_game',
+                    nickname: urlNick
+                  })
+                });
+                const data = await res.json();
+                if (data.success) {
+                  window.location.href = '/';
+                }
+              } catch (err) {
+                console.error('Erro ao sair do jogo:', err);
+              }
+            }
+          });
         }
       }
-      sorteadoDiv.textContent = `Você deve adivinhar o personagem de: ${sorteado}`;
     }
   } catch (err) {
-    // Silenciar erro
+    console.error('Erro ao mostrar nick sorteado:', err);
   }
 }
 
 // Chamar ao carregar o jogo
 document.addEventListener('DOMContentLoaded', mostrarNickSorteadoNoJogo);
+
+// Adicionar ao final do arquivo, antes do último });
+async function nextTurn() {
+  const urlRoom = getQueryParam('room');
+  if (!urlRoom) return;
+
+  try {
+    const res = await fetch('/api/lobby', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        roomCode: urlRoom, 
+        action: 'next_turn'
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      mostrarNickSorteadoNoJogo();
+    }
+  } catch (err) {
+    console.error('Erro ao passar turno:', err);
+  }
+}

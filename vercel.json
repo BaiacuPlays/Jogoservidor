@@ -1,8 +1,9 @@
-{  
-    "crons": [
-      {
-        "path": "/api/scheduled/generate-mixes",
-        "schedule": "0 0 * * *"
-      }
-    ]
-  }
+{
+  "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/scheduled/generate-mixes",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}

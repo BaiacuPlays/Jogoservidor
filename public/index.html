@@ -56,9 +56,9 @@
   </div>
 
   <main style="display: none;">
-    <header>
-      <h1>Pizzaria del Gatito, the game</h1>
-      <div class="controls">
+    <div class="side-panel">
+      <header>
+        <h1>Pizzaria del Gatito, the game</h1>
         <div id="point-counter">Personagens restantes: 128</div>
         <div class="dropdown">
           <button id="categoryButton" class="menu-button small" type="button">
@@ -83,13 +83,13 @@
         <button class="menu-button small" id="randomCharacterButton">Escolher Aleatoriamente</button>
         <button class="menu-button small">Resetar Personagens</button>
         <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
-      </div>
-    </header>
-    <div id="chosenDisplay" class="hidden">
-      <h3>Seu personagem:</h3>
-      <div id="chosenCharacterBox"></div>
+        <div id="chosenDisplay" class="hidden">
+          <h3>Seu personagem:</h3>
+          <div id="chosenCharacterBox"></div>
+        </div>
+        <div id="gameInfo"></div>
+      </header>
     </div>
-    <div id="gameInfo"></div>
     <section class="character-grid" id="characterGrid"></section>
   </main>
 

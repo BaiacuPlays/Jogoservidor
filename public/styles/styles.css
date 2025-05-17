@@ -196,6 +196,12 @@ main.visible {
   transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+body:not(.game-active) .psp-waves {
+  display: block !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
 .wave {
   position: absolute;
   width: 200%;
@@ -841,10 +847,12 @@ body.purple .scroll-indicator.bottom {
 @media (max-width: 1400px) {
   main {
     padding: 1rem;
+    gap: 1.5rem;
   }
   
   .character-grid {
     grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
   }
 }
 
@@ -852,6 +860,7 @@ body.purple .scroll-indicator.bottom {
   main {
     flex-direction: column;
     align-items: center;
+    padding: 1rem;
   }
   
   header {
@@ -859,33 +868,307 @@ body.purple .scroll-indicator.bottom {
     top: 0;
     width: 100%;
     max-width: 600px;
-    height: auto;
     margin-bottom: 1rem;
-    overflow-x: hidden;
   }
   
   .character-grid {
     grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    max-width: 900px;
   }
 }
 
 @media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
   .character-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
   }
-  
+
+  header {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
   #chosenDisplay {
-    max-width: 250px;
+    max-width: 150px;
+  }
+
+  #chosenCharacterBox {
+    width: 100px;
+    height: 133px;
+  }
+
+  .menu-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .menu-button.small {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  #point-counter {
+    font-size: 16px;
+  }
+
+  /* Ajustes para o menu inicial */
+  #startMenu {
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 400px;
+  }
+
+  #startMenu h2 {
+    font-size: 1.6em;
+  }
+
+  /* Ajustes para o menu de customização */
+  #customizationMenu {
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 400px;
+  }
+
+  #customizationMenu h2 {
+    font-size: 1.6em;
+  }
+
+  #customizationMenu select,
+  #customizationMenu input[type="range"] {
+    width: 100%;
+  }
+
+  /* Ajustes para o lobby */
+  #lobbyMenu {
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 400px;
+  }
+
+  #lobbyMenu h2 {
+    font-size: 1.6em;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .button-group button {
+    width: 100%;
   }
 }
 
 @media (max-width: 480px) {
+  body {
+    font-size: 13px;
+  }
+
   .character-grid {
     grid-template-columns: repeat(1, 1fr);
+    max-width: 300px;
   }
-  
+
   header {
+    padding: 0.8rem;
+  }
+
+  #chosenDisplay {
+    max-width: 120px;
+  }
+
+  #chosenCharacterBox {
+    width: 80px;
+    height: 106px;
+  }
+
+  .menu-button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .menu-button.small {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  #point-counter {
+    font-size: 14px;
+  }
+
+  /* Ajustes para o menu inicial */
+  #startMenu {
     padding: 1rem;
+  }
+
+  #startMenu h2 {
+    font-size: 1.4em;
+  }
+
+  /* Ajustes para o menu de customização */
+  #customizationMenu {
+    padding: 1rem;
+  }
+
+  #customizationMenu h2 {
+    font-size: 1.4em;
+  }
+
+  /* Ajustes para o lobby */
+  #lobbyMenu {
+    padding: 1rem;
+  }
+
+  #lobbyMenu h2 {
+    font-size: 1.4em;
+  }
+
+  #lobbyForm input {
+    padding: 8px;
+    font-size: 13px;
+  }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 360px) {
+  body {
+    font-size: 12px;
+  }
+
+  .character-grid {
+    max-width: 250px;
+  }
+
+  header {
+    padding: 0.6rem;
+  }
+
+  #chosenDisplay {
+    max-width: 100px;
+  }
+
+  #chosenCharacterBox {
+    width: 70px;
+    height: 93px;
+  }
+
+  .menu-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .menu-button.small {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  #point-counter {
+    font-size: 13px;
+  }
+}
+
+/* Ajustes para telas muito grandes */
+@media (min-width: 1920px) {
+  body {
+    font-size: 18px;
+  }
+
+  main {
+    max-width: 1800px;
+  }
+
+  .character-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  header {
+    width: 400px;
+  }
+
+  #chosenDisplay {
+    max-width: 220px;
+  }
+
+  #chosenCharacterBox {
+    width: 160px;
+    height: 213px;
+  }
+
+  .menu-button {
+    padding: 14px 28px;
+    font-size: 18px;
+  }
+
+  .menu-button.small {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+
+  #point-counter {
+    font-size: 20px;
+  }
+}
+
+/* Ajustes para orientação paisagem em dispositivos móveis */
+@media (max-height: 600px) and (orientation: landscape) {
+  .centered-menu {
+    padding: 1rem;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  #startMenu,
+  #customizationMenu,
+  #lobbyMenu {
+    padding: 1rem;
+  }
+
+  .character-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  header {
+    position: sticky;
+    top: 1rem;
+  }
+}
+
+/* Ajustes para telas de alta densidade de pixels */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .character img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Ajustes para modo escuro do sistema */
+@media (prefers-color-scheme: dark) {
+  body:not(.light) {
+    background-color: #1a1a1a;
+    color: #fff;
+  }
+}
+
+/* Ajustes para modo claro do sistema */
+@media (prefers-color-scheme: light) {
+  body:not(.dark) {
+    background-color: #f5f5f5;
+    color: #333;
+  }
+}
+
+/* Ajustes para reduzir movimento */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -1306,4 +1589,272 @@ body.purple #scaleRange::-moz-range-thumb {
     flex-direction: column;
     gap: 0;
   }
+}
+
+body.game-active .psp-waves {
+  display: none !important;
+}
+
+#lobbyMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+  padding: 2rem;
+  border-radius: 15px;
+  background: #2a2a2a;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border: 2px solid #3a3a3a;
+  width: 400px;
+  max-width: 90%;
+}
+
+#lobbyMenu.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#lobbyMenu h2 {
+  color: #e0e0e0;
+  font-size: 1.8em;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+#lobbyForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+#lobbyForm label {
+  color: #e0e0e0;
+  font-size: 1.1em;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+#lobbyForm input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: #3a3a3a;
+  color: #fff;
+  border: 2px solid #4a4a4a;
+  font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+#lobbyForm input:focus {
+  outline: none;
+  border-color: #5a5a5a;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+#lobbyForm button {
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 2px solid #3a3a3a;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+#lobbyForm button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+#lobbyForm button:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
+#lobbyForm button:active {
+  transform: scale(0.95);
+}
+
+#lobbyStatus {
+  color: #e0e0e0;
+  text-align: center;
+  margin: 1rem 0;
+  min-height: 24px;
+}
+
+#lobbyPlayers {
+  color: #e0e0e0;
+  text-align: center;
+  margin: 1rem 0;
+  min-height: 24px;
+}
+
+/* Ajustes para o tema claro */
+body.light #lobbyMenu {
+  background: #f7f7f7;
+  border: 2px solid #d0d0d0;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+body.light #lobbyMenu h2 {
+  color: #333;
+}
+
+body.light #lobbyForm label {
+  color: #333;
+}
+
+body.light #lobbyForm input {
+  background: #f5f5f5;
+  color: #333;
+  border: 2px solid #e0e0e0;
+}
+
+body.light #lobbyForm input:focus {
+  border-color: #d0d0d0;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+body.light #lobbyForm button {
+  background-color: #f7f7f7;
+  color: #333;
+  border: 2px solid #d0d0d0;
+}
+
+body.light #lobbyForm button::after {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body.light #lobbyStatus,
+body.light #lobbyPlayers {
+  color: #333;
+}
+
+/* Ajustes para o tema azul */
+body.blue #lobbyMenu {
+  background: #2a3447;
+  border: 2px solid #3a4b6e;
+}
+
+body.blue #lobbyForm input {
+  background: #3a4b6e;
+  border: 2px solid #4a5b8e;
+}
+
+body.blue #lobbyForm button {
+  background-color: #3a4b6e;
+  border: 2px solid #4a5b8e;
+}
+
+/* Ajustes para o tema verde */
+body.green #lobbyMenu {
+  background: #2a472a;
+  border: 2px solid #3a6e3a;
+}
+
+body.green #lobbyForm input {
+  background: #3a6e3a;
+  border: 2px solid #4a8e4a;
+}
+
+body.green #lobbyForm button {
+  background-color: #3a6e3a;
+  border: 2px solid #4a8e4a;
+}
+
+/* Ajustes para o tema roxo */
+body.purple #lobbyMenu {
+  background: #472a47;
+  border: 2px solid #6e3a6e;
+}
+
+body.purple #lobbyForm input {
+  background: #6e3a6e;
+  border: 2px solid #8e4a8e;
+}
+
+body.purple #lobbyForm button {
+  background-color: #6e3a6e;
+  border: 2px solid #8e4a8e;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.button-group button {
+  flex: 1;
+}
+
+.lobby-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.lobby-actions .menu-button {
+  width: 100%;
+}
+
+/* Ajustes para o tema claro */
+body.light .button-group button {
+  background-color: #f7f7f7;
+  color: #333;
+  border: 2px solid #d0d0d0;
+}
+
+body.light .button-group button:hover {
+  background-color: #eaeaea;
+  border-color: #bdbdbd;
+}
+
+/* Ajustes para o tema azul */
+body.blue .button-group button {
+  background-color: #3a4b6e;
+  border: 2px solid #4a5b8e;
+}
+
+body.blue .button-group button:hover {
+  background-color: #4a5b8e;
+}
+
+/* Ajustes para o tema verde */
+body.green .button-group button {
+  background-color: #3a6e3a;
+  border: 2px solid #4a8e4a;
+}
+
+body.green .button-group button:hover {
+  background-color: #4a8e4a;
+}
+
+/* Ajustes para o tema roxo */
+body.purple .button-group button {
+  background-color: #6e3a6e;
+  border: 2px solid #8e4a8e;
+}
+
+body.purple .button-group button:hover {
+  background-color: #8e4a8e;
 }

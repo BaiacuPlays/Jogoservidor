@@ -266,6 +266,17 @@ function showMenu(menuId) {
       if (menuId === 'main') mostrarNickSorteadoNoJogo();
     }, 50);
   }
+  // Corrigido: só adiciona game-active no main, remove em todos os outros
+  if (menuId === 'main') {
+    document.body.classList.add('game-active');
+    showPSPWaves(false);
+  } else {
+    document.body.classList.remove('game-active');
+    // Garante que as ondas aparecem no lobby
+    if (menuId === 'lobbyMenu') {
+      showPSPWaves(true);
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -696,6 +707,8 @@ function startGame() {
     }
     // Inicia o jogo com a categoria padrão
     selectCategory('');
+    // Adiciona a classe game-active no body
+    document.body.classList.add('game-active');
 }
 
 function openCustomizationMenu() {
@@ -761,6 +774,8 @@ function goBackToMenu() {
             startMenu.classList.remove('hidden');
         }, 50);
     }
+    // Remove a classe game-active do body
+    document.body.classList.remove('game-active');
 }
 
 function selectRandomCharacter() {

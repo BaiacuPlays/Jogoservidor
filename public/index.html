@@ -36,23 +36,26 @@
   <div id="lobbyMenu" class="centered-menu" style="display: none;">
     <h2>Lobby Online</h2>
     <form id="lobbyForm">
-      <label>Nickname:<br />
-        <input id="lobbyNick" required />
-      </label>
-      <br /><br />
-      <label>Código da sala:<br />
-        <input id="lobbyRoomCode" maxlength="6" />
-      </label>
-      <br /><br />
-      <button id="createLobbyBtn" type="submit">Criar sala</button>
-      <span style="margin: 0 8px;"></span>
-      <button id="joinLobbyBtn" type="button">Entrar na sala</button>
+      <label for="lobbyNick">Nickname:</label>
+      <input type="text" id="lobbyNick" required placeholder="Digite seu nickname" />
+      
+      <label for="lobbyRoomCode">Código da sala:</label>
+      <input type="text" id="lobbyRoomCode" maxlength="6" placeholder="Digite o código da sala" />
+      
+      <div class="button-group">
+        <button type="submit" id="createLobbyBtn">Criar sala</button>
+        <button type="button" id="joinLobbyBtn">Entrar na sala</button>
+      </div>
     </form>
+    
     <div id="lobbyStatus"></div>
-    <div id="lobbyPlayers" style="margin-top: 16px;"></div>
-    <button class="menu-button" id="startGameBtn" style="display:none; margin-top:16px;">Iniciar jogo</button>
-    <button class="menu-button" id="backToMenuFromLobby">Voltar ao Menu</button>
-    <button class="menu-button" id="leaveLobbyBtn" style="display:none; margin-top:8px;">Sair da sala</button>
+    <div id="lobbyPlayers"></div>
+    
+    <div class="lobby-actions">
+      <button class="menu-button" id="startGameBtn" style="display:none;">Iniciar jogo</button>
+      <button class="menu-button" id="backToMenuFromLobby">Voltar ao Menu</button>
+      <button class="menu-button" id="leaveLobbyBtn" style="display:none;">Sair da sala</button>
+    </div>
   </div>
 
   <main style="display: none;">

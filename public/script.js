@@ -855,6 +855,7 @@ document.getElementById('regenerateMixesButton')?.addEventListener('click', asyn
 // Função para verificar se os mixes precisam ser atualizados
 async function checkMixesUpdate() {
     try {
+        console.log('Verificando atualização dos mixes...');
         const response = await fetch('/api/update-mixes', {
             method: 'POST'
         });
@@ -883,7 +884,7 @@ function startMidnightCheck() {
     // Verifica a cada minuto
     setInterval(async () => {
         if (isMidnight()) {
-            console.log('Verificando atualização dos mixes...');
+            console.log('É meia-noite! Atualizando mixes...');
             await checkMixesUpdate();
         }
     }, 60000); // 60000 ms = 1 minuto
@@ -910,6 +911,8 @@ function loadSettings() {
 // Função para inicializar o jogo
 async function initializeGame() {
     try {
+        console.log('Inicializando jogo...');
+        
         // Verifica se os mixes precisam ser atualizados
         await checkMixesUpdate();
         

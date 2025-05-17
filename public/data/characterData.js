@@ -197,8 +197,14 @@ export const nintendoCharacters = [
 ];
 export const anthropomorphicCharacters = [
     'Mewtwo', 'Shadow', 'Spyro', 'Tail', 'Ralsei', 'Yi', 'Laika', 'Pikachu', 'Donkey',
-    'Banjo', 'Asriel', 'Ori', 'Lamb', 'Crash', 'Bowser', 'Sonic', 'Fox', 'Falco', 'Wolf',
-    'Greninja', 'Incineroar', 'Funky Kong', 'Diddy Kong', 'Knuckles', 'King K. Rool',
-    'Isabelle', 'Lucario', 'Eevee', 'Charizard', 'Blastoise', 'Dragonite', 'Raichu', 'Zeraora',
-    'Sableye', 'Decidueye', 'Lurantis', 'Salamence', 'Garchomp', 'Tyranitar', 'Zygarde', 'Lugia', 'Ho-Oh'
+'Banjo', 'Asriel', 'Ori', 'Lamb', 'Crash', 'Bowser', 'Sonic', 'Fox', 'Falco', 'Wolf',
+'Greninja', 'Incineroar', 'Funky Kong', 'Diddy Kong', 'Knuckles', 'King K. Rool',
+'Isabelle', 'Lucario', 'Eevee', 'Charizard', 'Blastoise', 'Dragonite', 'Raichu', 'Zeraora',
+'Sableye', 'Decidueye', 'Lurantis', 'Salamence', 'Garchomp', 'Tyranitar', 'Zygarde', 'Lugia', 'Ho-Oh', 'Amy', 'Rouge',
+'Blaze', 'Mae', 'Macaco Engenheiro', 'Coco', 'Tiny Tiger', 'Demonio', 'Freddy', 'Chica', 'Bonnie', 'Foxy', 'Klonoa', 'Ratchet',
+'Niko', 'Rain World', 'Hammer Bro', 'Krystal', 'Koopa', 'Petey Piranha', 'Transformice', 'Yoshi', 'Jigglypuff', 
+'Pichu', 'Conker', 'Cranky Kong', 'King Dedede', 'Bulbasaur', 'Charmander', 'Squirtle', 
+'Mew', 'Gardevoir', 'Snorlax', 'Ditto', 'Vaporeon', 
+'Jolteon', 'Flareon', 'Espeon', 'Umbreon', 'Absol', 'Kamek', 'Dixie Kong', 'Birdo'
+
 ];

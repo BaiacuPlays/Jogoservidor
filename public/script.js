@@ -228,6 +228,7 @@ function createCharacterGridInternal() {
   }
 
   updateChosenCharacterHeader();
+  applyMainButtonListeners();
 }
 
 function updateCounter(max) {
@@ -801,6 +802,7 @@ function selectRandomCharacter() {
   updateCounter(currentActiveMaxPoints);
 
   updateChosenCharacterHeader();
+  applyMainButtonListeners();
 }
 
 function resetCharacters() {
@@ -828,6 +830,7 @@ function resetCharacters() {
   }
 
   updateChosenCharacterHeader();
+  applyMainButtonListeners();
 }
 
 // Carregar tema salvo
@@ -1213,5 +1216,21 @@ function updateChosenCharacterHeader() {
     chosenHeader.innerHTML = `<img src="${chosenCharacter.image}" alt="Seu personagem" class="chosen-header-img" title="Seu personagem">`;
   } else {
     chosenHeader.innerHTML = `<div class="placeholder" title="Seu personagem">?</div>`;
+  }
+}
+
+function applyMainButtonListeners() {
+  const randomBtn = document.getElementById('randomCharacterButton');
+  const resetBtn = document.querySelector('button.menu-button.small:nth-of-type(2)');
+  const backBtn = document.querySelector('button.menu-button.small:nth-of-type(3)');
+
+  if (randomBtn) {
+    randomBtn.onclick = selectRandomCharacter;
+  }
+  if (resetBtn) {
+    resetBtn.onclick = resetCharacters;
+  }
+  if (backBtn) {
+    backBtn.onclick = goBackToMenu;
   }
 }

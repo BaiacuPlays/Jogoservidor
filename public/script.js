@@ -464,24 +464,32 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
   if (lobbyForm) {
     lobbyForm.addEventListener('submit', async function (event) {
       event.preventDefault();
-      if (!lobbyNick.value) return;
+      const nick = lobbyNick.value.trim();
+      if (!nick) {
+        lobbyStatus.innerHTML = '<span style="color:red">Digite um nickname para criar a sala.</span>';
+        lobbyNick.focus();
+        return;
+      }
+      if (nick.length < 2 || nick.length > 16) {
+        lobbyStatus.innerHTML = '<span style="color:red">O nickname deve ter entre 2 e 16 caracteres.</span>';
+        lobbyNick.focus();
+        return;
+      }
       lobbyStatus.textContent = 'Criando sala...';
       try {
         const res = await fetch(`${API_BASE_URL}/api/lobby`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nickname: lobbyNick.value })
+          body: JSON.stringify({ nickname: nick })
         });
-        
         if (!res.ok) {
           const errorData = await res.json();
           throw new Error(errorData.error || 'Erro ao criar sala');
         }
-        
         const data = await res.json();
         if (data.roomCode) {
           currentRoomCode = data.roomCode;
-          currentNick = lobbyNick.value;
+          currentNick = nick;
           lobbyRoomCode.value = data.roomCode;
           lobbyStatus.innerHTML = `<b>Sala criada!</b> Código: <span style='font-family:monospace; font-size:2em; letter-spacing:2px; background:#222; padding:4px 12px; border-radius:8px;'>${data.roomCode}</span>`;
           startLobbyPolling(data.roomCode);
@@ -492,7 +500,6 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
           throw new Error('Resposta inválida do servidor');
         }
       } catch (err) {
-        console.error('Erro ao criar sala:', err);
         lobbyStatus.innerHTML = `<span style="color:red">Erro ao criar sala: ${err.message}</span>`;
       }
     });
@@ -506,18 +513,57 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
   if (joinLobbyBtn) {
     joinLobbyBtn.addEventListener('click', async function (event) {
       event.preventDefault();
-      if (!lobbyNick.value || !lobbyRoomCode.value) return;
+      const nick = lobbyNick.value.trim();
+      const code = lobbyRoomCode.value.trim().toUpperCase();
+      if (!nick) {
+        lobbyStatus.innerHTML = '<span style="color:red">Digite um nickname para entrar na sala.</span>';
+        lobbyNick.focus();
+        return;
+      }
+      if (nick.length < 2 || nick.length > 16) {
+        lobbyStatus.innerHTML = '<span style="color:red">O nickname deve ter entre 2 e 16 caracteres.</span>';
+        lobbyNick.focus();
+        return;
+      }
+      if (!code) {
+        lobbyStatus.innerHTML = '<span style="color:red">Digite o código da sala.</span>';
+        lobbyRoomCode.focus();
+        return;
+      }
+      if (!/^[A-Z0-9]{6}$/.test(code)) {
+        lobbyStatus.innerHTML = '<span style="color:red">O código da sala deve ter 6 caracteres (letras e números).</span>';
+        lobbyRoomCode.focus();
+        return;
+      }
+      lobbyStatus.textContent = 'Verificando sala...';
+      // Verificar se o nick já está na sala antes de tentar entrar
+      try {
+        const resCheck = await fetch(`/api/lobby?roomCode=${code}`);
+        const dataCheck = await resCheck.json();
+        if (!resCheck.ok) {
+          lobbyStatus.innerHTML = `<span style='color:red'>${dataCheck.error || 'Sala não encontrada.'}</span>`;
+          return;
+        }
+        if (dataCheck.players && dataCheck.players.includes(nick)) {
+          lobbyStatus.innerHTML = `<span style='color:red'>Este nickname já está sendo usado na sala.</span>`;
+          lobbyNick.focus();
+          return;
+        }
+      } catch (err) {
+        lobbyStatus.innerHTML = '<span style="color:red">Erro ao verificar sala.</span>';
+        return;
+      }
       lobbyStatus.textContent = 'Entrando na sala...';
       try {
         const res = await fetch('/api/lobby', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nickname: lobbyNick.value, roomCode: lobbyRoomCode.value.toUpperCase() })
+          body: JSON.stringify({ nickname: nick, roomCode: code })
         });
         const data = await res.json();
         if (data.success) {
-          currentRoomCode = lobbyRoomCode.value.toUpperCase();
-          currentNick = lobbyNick.value;
+          currentRoomCode = code;
+          currentNick = nick;
           lobbyStatus.innerHTML = `<b>Entrou na sala!</b> Código: <span style='font-family:monospace; font-size:2em; letter-spacing:2px; background:#222; padding:4px 12px; border-radius:8px;'>${currentRoomCode}</span>`;
           startLobbyPolling(currentRoomCode);
           if (leaveLobbyBtn) leaveLobbyBtn.style.display = 'inline-block';

@@ -45,7 +45,7 @@ function sortearNicks(players) {
 
 export const config = {
   runtime: 'edge',
-  regions: ['sao1'],
+  regions: ['gru1'],
 };
 
 export default async function handler(req) {

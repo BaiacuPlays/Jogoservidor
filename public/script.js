@@ -1149,6 +1149,8 @@ async function mostrarNickSorteadoNoJogo() {
       if (nextTurnBtn) {
         nextTurnBtn.addEventListener('click', async () => {
           await nextTurn();
+          // Atualizar a interface após passar a vez
+          mostrarNickSorteadoNoJogo();
         });
       }
     }
@@ -1182,3 +1184,15 @@ async function nextTurn() {
     console.error('Erro ao passar turno:', err);
   }
 }
+
+// Adicionar polling para atualizar o turno periodicamente
+let gamePollingInterval = null;
+function startGamePolling() {
+  if (gamePollingInterval) clearInterval(gamePollingInterval);
+  gamePollingInterval = setInterval(mostrarNickSorteadoNoJogo, 2000);
+}
+document.addEventListener('DOMContentLoaded', () => {
+  if (getQueryParam('room') && getQueryParam('nick')) {
+    startGamePolling();
+  }
+});

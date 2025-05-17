@@ -56,40 +56,38 @@
   </div>
 
   <main style="display: none;">
-    <div class="side-panel">
-      <header>
-        <h1>Pizzaria del Gatito, the game</h1>
-        <div id="point-counter">Personagens restantes: 128</div>
-        <div class="dropdown">
-          <button id="categoryButton" class="menu-button small" type="button">
-            <div class="button-content">
-              <span>Categoria: <span id="selectedCategory"></span></span>
-              <span class="arrow"></span>
-            </div>
-          </button>
-          <div id="categoryDropdown" class="dropdown-content">
-            <div class="scroll-indicator top"></div>
-            <button type="button" class="dropdown-item">Todos</button>
-            <button type="button" class="dropdown-item">Nintendo</button>
-            <button type="button" class="dropdown-item">Antropomórficos</button>
-            <button type="button" class="dropdown-item">Mix 1</button>
-            <button type="button" class="dropdown-item">Mix 2</button>
-            <button type="button" class="dropdown-item">Mix 3</button>
-            <button type="button" class="dropdown-item">Categoria 6</button>
-            <button type="button" class="dropdown-item">Categoria 7</button>
-            <div class="scroll-indicator bottom"></div>
+    <header>
+      <h1>Pizzaria del Gatito, the game</h1>
+      <div id="point-counter">Personagens restantes: 128</div>
+      <div class="dropdown">
+        <button id="categoryButton" class="menu-button small" type="button">
+          <div class="button-content">
+            <span>Categoria: <span id="selectedCategory"></span></span>
+            <span class="arrow"></span>
           </div>
+        </button>
+        <div id="categoryDropdown" class="dropdown-content">
+          <div class="scroll-indicator top"></div>
+          <button type="button" class="dropdown-item">Todos</button>
+          <button type="button" class="dropdown-item">Nintendo</button>
+          <button type="button" class="dropdown-item">Antropomórficos</button>
+          <button type="button" class="dropdown-item">Mix 1</button>
+          <button type="button" class="dropdown-item">Mix 2</button>
+          <button type="button" class="dropdown-item">Mix 3</button>
+          <button type="button" class="dropdown-item">Categoria 6</button>
+          <button type="button" class="dropdown-item">Categoria 7</button>
+          <div class="scroll-indicator bottom"></div>
         </div>
-        <button class="menu-button small" id="randomCharacterButton">Escolher Aleatoriamente</button>
-        <button class="menu-button small">Resetar Personagens</button>
-        <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
-        <div id="chosenDisplay" class="hidden">
-          <h3>Seu personagem:</h3>
-          <div id="chosenCharacterBox"></div>
-        </div>
-        <div id="gameInfo"></div>
-      </header>
-    </div>
+      </div>
+      <button class="menu-button small" id="randomCharacterButton">Escolher Aleatoriamente</button>
+      <button class="menu-button small">Resetar Personagens</button>
+      <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
+      <div id="chosenDisplay" class="hidden">
+        <h3>Seu personagem:</h3>
+        <div id="chosenCharacterBox"></div>
+      </div>
+      <div id="gameInfo"></div>
+    </header>
     <section class="character-grid" id="characterGrid"></section>
   </main>
 

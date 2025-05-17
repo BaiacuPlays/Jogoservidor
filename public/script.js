@@ -1094,6 +1094,12 @@ async function mostrarNickSorteadoNoJogo() {
         }
         
         html += `<button id="leaveGameBtn" class="menu-button small">Sair do Jogo</button>`;
+        
+        // Mostrar o botão de passar a vez apenas para o jogador atual
+        if (currentTurn === urlNick) {
+          html += `<button id="nextTurnBtn" class="menu-button small">Passar a vez</button>`;
+        }
+        
         html += `</div>`;
         
         gameInfo.innerHTML = html;
@@ -1147,20 +1153,27 @@ async function mostrarNickSorteadoNoJogo() {
           });
         }
 
-        const isMyTurn = currentTurn === urlNick;
-        if (isMyTurn) {
-          html += `<button id="nextTurnBtn" class="menu-button small">Passar a vez</button>`;
+        const nextTurnBtn = document.getElementById('nextTurnBtn');
+        if (nextTurnBtn) {
+          nextTurnBtn.addEventListener('click', async () => {
+            try {
+              const res = await fetch('/api/lobby', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                  roomCode: urlRoom, 
+                  action: 'next_turn'
+                })
+              });
+              const data = await res.json();
+              if (data.success) {
+                mostrarNickSorteadoNoJogo();
+              }
+            } catch (err) {
+              console.error('Erro ao passar turno:', err);
+            }
+          });
         }
-      }
-
-      // Após adicionar os outros event listeners:
-      const nextTurnBtn = document.getElementById('nextTurnBtn');
-      if (nextTurnBtn) {
-        nextTurnBtn.addEventListener('click', async () => {
-          await nextTurn();
-          // Atualizar a interface após passar a vez
-          mostrarNickSorteadoNoJogo();
-        });
       }
     }
   } catch (err) {

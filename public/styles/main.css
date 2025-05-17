@@ -89,7 +89,7 @@
   height: 180px;
   border: 2px solid #dde2f1;
   border-radius: 18px;
-  background: none;
+  background: #222;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,11 +97,13 @@
   box-sizing: border-box;
 }
 #chosenCharacterBox img {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 90%;
+  max-height: 95%;
+  object-fit: contain;
   border-radius: 14px;
   display: block;
   margin: 0 auto;
+  background: none;
 }
 #chosenCharacterHeader {
   display: flex;

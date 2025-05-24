@@ -41,19 +41,19 @@
     <form id="lobbyForm">
       <label for="lobbyNick">Nickname:</label>
       <input type="text" id="lobbyNick" required placeholder="Digite seu nickname" />
-      
+
       <label for="lobbyRoomCode">Código da sala:</label>
       <input type="text" id="lobbyRoomCode" maxlength="6" placeholder="Digite o código da sala" />
-      
+
       <div class="button-group">
         <button type="submit" id="createLobbyBtn">Criar sala</button>
         <button type="button" id="joinLobbyBtn">Entrar na sala</button>
       </div>
     </form>
-    
+
     <div id="lobbyStatus"></div>
     <div id="lobbyPlayers"></div>
-    
+
     <div class="lobby-actions">
       <button class="menu-button" id="startGameBtn" style="display:none;">Iniciar jogo</button>
       <button class="menu-button" id="backToMenuFromLobby">Voltar ao Menu</button>
@@ -86,6 +86,7 @@
       <button class="menu-button small" id="randomCharacterButton">Escolher Aleatoriamente</button>
       <button class="menu-button small">Resetar Personagens</button>
       <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
+      <button class="menu-button small secret-button" id="regenerateMixesSecretButton" style="display: none; background-color: #ff6b6b; border-color: #ff5252;">🔄 Regenerar Mixes Globais</button>
       <div id="chosenDisplay" class="hidden">
         <h3>Seu personagem:</h3>
         <div id="chosenCharacterBox"></div>

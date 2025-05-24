@@ -394,6 +394,50 @@ body.dark .centered-menu {
   margin-top: 10px;
 }
 
+/* Estilos para o botão secreto */
+.menu-button.secret-button {
+  background-color: #ff6b6b !important;
+  border-color: #ff5252 !important;
+  color: #fff !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-button.secret-button:hover {
+  background-color: #ff5252 !important;
+  border-color: #ff4444 !important;
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+  transform: translateY(-2px);
+}
+
+.menu-button.secret-button:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.menu-button.secret-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Animação de pulse para o botão secreto */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  }
+}
+
 :root {
   --interface-scale: 1;
 }
@@ -408,14 +452,14 @@ body.dark {
   color: #fff;
 }
 
-body.light header, 
+body.light header,
 body.light header * {
   color: #333 !important;
   background: transparent !important;
   opacity: 1 !important;
   visibility: visible !important;
   z-index: 100 !important;
-  
+
 }
 
 body.dark header {
@@ -502,7 +546,7 @@ body.light #customizationMenu {
   display: none;
   opacity: 1;
   transition: opacity 0.3s ease;
-  
+
   h2{
     color: white;
   }
@@ -856,7 +900,7 @@ body.purple .scroll-indicator.bottom {
     padding: 1rem;
     gap: 1.5rem;
   }
-  
+
   .character-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
@@ -869,7 +913,7 @@ body.purple .scroll-indicator.bottom {
     align-items: center;
     padding: 1rem;
   }
-  
+
   header {
     position: relative;
     top: 0;
@@ -877,7 +921,7 @@ body.purple .scroll-indicator.bottom {
     max-width: 600px;
     margin-bottom: 1rem;
   }
-  
+
   .character-grid {
     grid-template-columns: repeat(3, 1fr);
     width: 100%;

@@ -16,9 +16,140 @@ import { shuffleArray, getRandomCharacters } from '/utils/helpers.js';
 let currentActiveCharacterList = [];
 let currentActiveMaxPoints = maxPoints;
 
+// Sistema de código secreto
+let secretSequence = 'sacabambapis';
+let typedSequence = '';
+let secretButtonVisible = false;
+
 function debugLog(...args) {
     if (DEBUG) {
         console.log('[DEBUG]', ...args);
+    }
+}
+
+// Função para detectar a sequência secreta
+function handleSecretSequence(event) {
+    // Só detecta letras minúsculas
+    if (event.key && event.key.length === 1 && /[a-z]/.test(event.key)) {
+        typedSequence += event.key;
+
+        // Mantém apenas os últimos caracteres necessários
+        if (typedSequence.length > secretSequence.length) {
+            typedSequence = typedSequence.slice(-secretSequence.length);
+        }
+
+        // Verifica se a sequência foi digitada
+        if (typedSequence === secretSequence) {
+            showSecretButton();
+            typedSequence = ''; // Reset para evitar múltiplas ativações
+        }
+    }
+}
+
+// Função para mostrar o botão secreto
+function showSecretButton() {
+    const secretButton = document.getElementById('regenerateMixesSecretButton');
+    if (secretButton && !secretButtonVisible) {
+        secretButtonVisible = true;
+        secretButton.style.display = 'inline-block';
+
+        // Efeito visual de aparição
+        secretButton.style.opacity = '0';
+        secretButton.style.transform = 'scale(0.8)';
+        secretButton.style.transition = 'all 0.3s ease';
+
+        setTimeout(() => {
+            secretButton.style.opacity = '1';
+            secretButton.style.transform = 'scale(1)';
+        }, 10);
+
+        // Feedback visual temporário
+        const originalText = secretButton.textContent;
+        secretButton.textContent = '✨ Código Secreto Ativado! ✨';
+        secretButton.style.animation = 'pulse 1s ease-in-out';
+
+        setTimeout(() => {
+            secretButton.textContent = originalText;
+            secretButton.style.animation = '';
+        }, 2000);
+
+        debugLog('Botão secreto ativado!');
+    }
+}
+
+// Função para regenerar mixes globalmente
+async function regenerateGlobalMixes() {
+    const secretButton = document.getElementById('regenerateMixesSecretButton');
+    const originalText = secretButton ? secretButton.textContent : '';
+
+    try {
+        // Feedback visual durante o processo
+        if (secretButton) {
+            secretButton.disabled = true;
+            secretButton.textContent = '🔄 Regenerando...';
+            secretButton.style.backgroundColor = '#ffa726';
+        }
+
+        // Mostra mensagem no grid se estiver visível
+        if (characterGrid) {
+            characterGrid.innerHTML = '<p style="text-align: center; font-size: 1.2em; color: #ff6b6b;">🔄 Regenerando mixes para todos os usuários... Aguarde.</p>';
+        }
+
+        console.log('Iniciando regeneração global dos mixes...');
+        const response = await fetch('/api/force-generate-mixes', {
+            method: 'POST'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.details || data.error || 'Falha ao regenerar mixes');
+        }
+
+        console.log('Mixes regenerados globalmente com sucesso:', data);
+
+        // Feedback de sucesso
+        if (secretButton) {
+            secretButton.textContent = '✅ Sucesso!';
+            secretButton.style.backgroundColor = '#4caf50';
+        }
+
+        // Alerta de sucesso
+        alert('🎉 Mixes regenerados com sucesso para todos os usuários!\n\nTodos os jogadores agora terão os mesmos personagens nos Mix 1, 2 e 3.');
+
+        // Recarrega a categoria atual se for um mix
+        const currentCategory = selectedCategory?.textContent;
+        if (currentCategory && ['Mix 1', 'Mix 2', 'Mix 3'].includes(currentCategory)) {
+            console.log('Recarregando categoria atual:', currentCategory);
+            selectCategory(currentCategory);
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Erro ao regenerar mixes globalmente:', error);
+
+        // Feedback de erro
+        if (secretButton) {
+            secretButton.textContent = '❌ Erro!';
+            secretButton.style.backgroundColor = '#f44336';
+        }
+
+        // Mostra erro no grid se estiver visível
+        if (characterGrid) {
+            characterGrid.innerHTML = `<p style="text-align: center; color: #f44336;">❌ Erro ao regenerar mixes: ${error.message}</p>`;
+        }
+
+        alert('❌ Erro ao regenerar mixes: ' + error.message);
+        return false;
+    } finally {
+        // Restaura o botão após 3 segundos
+        if (secretButton) {
+            setTimeout(() => {
+                secretButton.disabled = false;
+                secretButton.textContent = originalText;
+                secretButton.style.backgroundColor = '#ff6b6b';
+            }, 3000);
+        }
     }
 }
 
@@ -27,11 +158,11 @@ async function initializeData() {
         debugLog('Iniciando inicialização dos dados...');
         const response = await fetch(`${API_BASE_URL}/api/init-data`);
         const data = await response.json();
-        
+
         if (!response.ok) {
             throw new Error(data.details || data.error || response.statusText);
         }
-        
+
         debugLog('Dados inicializados:', data);
         return true;
     } catch (error) {
@@ -49,13 +180,13 @@ async function generateMixesIfNeeded() {
         const response = await fetch('/api/force-generate-mixes', {
             method: 'POST'
         });
-        
+
         const data = await response.json();
-        
+
         if (!response.ok) {
             throw new Error(data.details || data.error || 'Falha ao gerar mixes');
         }
-        
+
         console.log('Mixes gerados com sucesso:', data);
         return true;
     } catch (error) {
@@ -75,7 +206,7 @@ async function selectCategory(categoryName) {
     currentCategory = categoryName || 'Todos';
     if (selectedCategory) { selectedCategory.textContent = currentCategory; }
     if (characterGrid) { characterGrid.innerHTML = ''; }
-    
+
     // Esconde a seção do personagem escolhido durante o carregamento
     const chosenDisplay = document.getElementById('chosenDisplay');
     if (chosenDisplay) {
@@ -105,7 +236,7 @@ async function selectCategory(categoryName) {
             console.log(`Buscando mix ${categoryKey}...`);
             const response = await fetch(apiUrl);
             const data = await response.json();
-            
+
             if (!response.ok) {
                 if (response.status === 404) {
                     console.log('Mix não encontrado, tentando gerar...');
@@ -116,7 +247,7 @@ async function selectCategory(categoryName) {
                         // Tenta buscar novamente após gerar
                         const retryResponse = await fetch(apiUrl);
                         const retryData = await retryResponse.json();
-                        
+
                         if (retryResponse.ok) {
                             charactersToDisplay = retryData;
                             maxPointsForCategory = Math.min(50, charactersToDisplay.length);
@@ -137,7 +268,7 @@ async function selectCategory(categoryName) {
             }
         } catch (error) {
             console.error(`Erro ao carregar mix ${categoryName}:`, error);
-            if (characterGrid) { 
+            if (characterGrid) {
                 characterGrid.innerHTML = `<p>Erro ao carregar o Mix ${categoryName}: ${error.message}</p>`;
             }
             charactersToDisplay = [];
@@ -202,7 +333,7 @@ function createCharacterGridInternal() {
           if (chosenCharacterBox) {
             chosenCharacterBox.innerHTML = `<img src="${charObject.image}" alt="${charObject.name}">`;
           }
-          
+
           // Após escolher o personagem, passar para o próximo turno
           await nextTurn();
         } else {
@@ -280,6 +411,28 @@ function showMenu(menuId) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Adiciona listener para detectar a sequência secreta
+  document.addEventListener('keydown', handleSecretSequence);
+
+  // Adiciona listener para o botão secreto
+  const secretButton = document.getElementById('regenerateMixesSecretButton');
+  if (secretButton) {
+    secretButton.addEventListener('click', async (event) => {
+      event.preventDefault();
+
+      // Confirmação antes de regenerar
+      const confirmed = confirm(
+        '⚠️ ATENÇÃO: Esta ação irá regenerar os mixes para TODOS os usuários!\n\n' +
+        'Todos os jogadores terão os mesmos novos personagens nos Mix 1, 2 e 3.\n\n' +
+        'Deseja continuar?'
+      );
+
+      if (confirmed) {
+        await regenerateGlobalMixes();
+      }
+    });
+  }
+
   const categoryButton = document.getElementById('categoryButton');
   const categoryDropdown = document.getElementById('categoryDropdown');
 
@@ -841,7 +994,7 @@ function selectRandomCharacter() {
   // Seleciona um personagem aleatório
   const randomIndex = Math.floor(Math.random() * currentActiveCharacterList.length);
   const randomChar = currentActiveCharacterList[randomIndex];
-  
+
   // Atualiza o estado
   playerChosen = true;
   chosenCharacter = randomChar;
@@ -945,11 +1098,11 @@ async function checkMixesUpdate() {
         const response = await fetch('/api/update-mixes', {
             method: 'POST'
         });
-        
+
         if (!response.ok) {
             throw new Error('Falha ao verificar atualização dos mixes');
         }
-        
+
         const data = await response.json();
         console.log('Status dos mixes:', data.message);
         return data.timestamp;
@@ -998,28 +1151,28 @@ function loadSettings() {
 async function initializeGame() {
     try {
         console.log('Inicializando jogo...');
-        
+
         // Verifica se os mixes precisam ser atualizados
         await checkMixesUpdate();
-        
+
         // Inicia a verificação periódica para meia-noite
         startMidnightCheck();
-        
+
         // Carrega as configurações salvas
         loadSettings();
-        
+
         // Inicializa os elementos da interface
         const categoryButton = document.getElementById('categoryButton');
         const categoryDropdown = document.getElementById('categoryDropdown');
-        
+
         if (categoryButton && categoryDropdown) {
             // Remove event listeners antigos para evitar duplicação
             const newCategoryButton = categoryButton.cloneNode(true);
             categoryButton.parentNode.replaceChild(newCategoryButton, categoryButton);
-            
+
             const newCategoryDropdown = categoryDropdown.cloneNode(true);
             categoryDropdown.parentNode.replaceChild(newCategoryDropdown, categoryDropdown);
-            
+
             // Adiciona os event listeners novamente
             newCategoryButton.addEventListener('click', function(event) {
                 event.preventDefault();
@@ -1029,14 +1182,14 @@ async function initializeGame() {
                     updateScrollIndicators();
                 }
             });
-            
+
             // Fechar o dropdown quando clicar fora
             document.addEventListener('click', function(event) {
                 if (!newCategoryButton.contains(event.target) && !newCategoryDropdown.contains(event.target)) {
                     newCategoryDropdown.classList.remove('show');
                 }
             });
-            
+
             // Fechar o dropdown quando selecionar um item
             const dropdownItems = newCategoryDropdown.querySelectorAll('.dropdown-item');
             dropdownItems.forEach(item => {
@@ -1048,7 +1201,7 @@ async function initializeGame() {
                 });
             });
         }
-        
+
         console.log('Jogo inicializado com sucesso!');
     } catch (error) {
         console.error('Erro ao inicializar o jogo:', error);
@@ -1060,18 +1213,18 @@ document.addEventListener('DOMContentLoaded', initializeGame);
 
 function monitorWaveAnimations() {
   debugLog('Starting wave animation monitoring');
-  
+
   const waves = document.querySelectorAll('.wave');
   waves.forEach((wave, index) => {
     // Monitor animation events
     wave.addEventListener('animationstart', () => {
       debugLog(`Wave ${index + 1} animation started`);
     });
-    
+
     wave.addEventListener('animationiteration', () => {
       debugLog(`Wave ${index + 1} animation iteration`);
     });
-    
+
     wave.addEventListener('animationend', () => {
       debugLog(`Wave ${index + 1} animation ended`);
     });
@@ -1093,13 +1246,13 @@ function monitorWaveAnimations() {
 
 function monitorThemeChanges() {
   debugLog('Iniciando monitoramento de mudanças de tema');
-  
+
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
         const currentTheme = document.body.className;
         debugLog('Tema alterado para:', currentTheme);
-        
+
         const waves = document.querySelectorAll('.wave');
         waves.forEach((wave, index) => {
           const computedStyle = window.getComputedStyle(wave);
@@ -1136,7 +1289,7 @@ async function mostrarNickSorteadoNoJogo() {
   try {
     const res = await fetch(`/api/lobby?roomCode=${urlRoom}`);
     const data = await res.json();
-    
+
     if (data.sorteio && data.sorteio[urlNick]) {
       const targetNick = data.sorteio[urlNick];
       const currentTurn = data.currentTurn;
@@ -1149,20 +1302,20 @@ async function mostrarNickSorteadoNoJogo() {
         html += `<div class="round">Rodada ${round}</div>`;
         html += `<div class="target">Você deve adivinhar: <strong>${targetNick}</strong></div>`;
         html += `<div class="turn">Vez de: <strong>${currentTurn}</strong></div>`;
-        
+
         if (isHost) {
           html += `<button id="resetGameBtn" class="menu-button small">Resetar Partida</button>`;
         }
-        
+
         html += `<button id="leaveGameBtn" class="menu-button small">Sair do Jogo</button>`;
-        
+
         // Mostrar o botão de passar a vez apenas para o jogador atual
         if (currentTurn === urlNick) {
           html += `<button id="nextTurnBtn" class="menu-button small">Passar a vez</button>`;
         }
-        
+
         html += `</div>`;
-        
+
         gameInfo.innerHTML = html;
 
         // Adicionar eventos aos botões
@@ -1173,8 +1326,8 @@ async function mostrarNickSorteadoNoJogo() {
               const res = await fetch('/api/lobby', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                  roomCode: urlRoom, 
+                body: JSON.stringify({
+                  roomCode: urlRoom,
                   action: 'reset_game',
                   nickname: urlNick
                 })
@@ -1197,8 +1350,8 @@ async function mostrarNickSorteadoNoJogo() {
                 const res = await fetch('/api/lobby', {
                   method: 'PATCH',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ 
-                    roomCode: urlRoom, 
+                  body: JSON.stringify({
+                    roomCode: urlRoom,
                     action: 'leave_game',
                     nickname: urlNick
                   })
@@ -1221,8 +1374,8 @@ async function mostrarNickSorteadoNoJogo() {
               const res = await fetch('/api/lobby', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                  roomCode: urlRoom, 
+                body: JSON.stringify({
+                  roomCode: urlRoom,
                   action: 'next_turn'
                 })
               });
@@ -1256,8 +1409,8 @@ async function nextTurn() {
     const res = await fetch('/api/lobby', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        roomCode: urlRoom, 
+      body: JSON.stringify({
+        roomCode: urlRoom,
         action: 'next_turn'
       })
     });

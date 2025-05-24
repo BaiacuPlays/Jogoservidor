@@ -12,42 +12,63 @@
 <body>
   <div id="startMenu" class="centered-menu">
     <!-- As ondas serão criadas pelo JS -->
-    <h2>Menu Inicial</h2>
-    <button class="menu-button" id="playLocalButton">Jogar Local</button>
-    <button class="menu-button" id="playOnlineButton">Jogar Online</button>
-    <button class="menu-button" id="customizationButton">Customização</button>
+    <h2>🍕 Pizzaria del Gatito</h2>
+    <button class="menu-button" id="playLocalButton">
+      <span class="button-icon">🎮</span>
+      <span class="button-text">Jogar Local</span>
+    </button>
+    <button class="menu-button" id="playOnlineButton">
+      <span class="button-icon">🌐</span>
+      <span class="button-text">Jogar Online</span>
+    </button>
+    <button class="menu-button" id="customizationButton">
+      <span class="button-icon">⚙️</span>
+      <span class="button-text">Customização</span>
+    </button>
+
   </div>
 
   <div id="customizationMenu" class="centered-menu" style="display: none;">
-    <h2>Customização</h2>
-    <label for="themeSelect">Tema:</label>
-    <select id="themeSelect">
-      <option value="dark">Escuro</option>
-      <option value="light">Claro</option>
-      <option value="blue">Azul</option>
-      <option value="green">Verde</option>
-      <option value="purple">Roxo</option>
-    </select>
-    <br><br>
-    <label for="scaleRange">Tamanho da interface:</label>
-    <input type="range" id="scaleRange" min="0.5" max="1.5" step="0.1" value="1">
-    <div class="scale-value">100%</div>
-    <br><br>
-    <button class="menu-button" id="backToMenuFromCustomization">Voltar</button>
+    <h2>⚙️ Customização</h2>
+    <div class="customization-group">
+      <label for="themeSelect">🎨 Tema:</label>
+      <select id="themeSelect">
+        <option value="dark">🌙 Escuro</option>
+        <option value="light">☀️ Claro</option>
+        <option value="blue">💙 Azul</option>
+        <option value="green">💚 Verde</option>
+        <option value="purple">💜 Roxo</option>
+      </select>
+    </div>
+    <div class="customization-group">
+      <label for="scaleRange">📏 Tamanho da interface:</label>
+      <input type="range" id="scaleRange" min="0.5" max="1.5" step="0.1" value="1">
+      <div class="scale-value">100%</div>
+    </div>
+    <button class="menu-button" id="backToMenuFromCustomization">
+      <span class="button-icon">🔙</span>
+      <span class="button-text">Voltar</span>
+    </button>
   </div>
 
   <div id="lobbyMenu" class="centered-menu" style="display: none;">
-    <h2>Lobby Online</h2>
+    <h2>🌐 Lobby Online</h2>
     <form id="lobbyForm">
-      <label for="lobbyNick">Nickname:</label>
+      <label for="lobbyNick">👤 Nickname:</label>
       <input type="text" id="lobbyNick" required placeholder="Digite seu nickname" />
 
-      <label for="lobbyRoomCode">Código da sala:</label>
+      <label for="lobbyRoomCode">🔑 Código da sala:</label>
       <input type="text" id="lobbyRoomCode" maxlength="6" placeholder="Digite o código da sala" />
 
       <div class="button-group">
-        <button type="submit" id="createLobbyBtn">Criar sala</button>
-        <button type="button" id="joinLobbyBtn">Entrar na sala</button>
+        <button type="submit" id="createLobbyBtn">
+          <span class="button-icon">➕</span>
+          <span class="button-text">Criar sala</span>
+        </button>
+        <button type="button" id="joinLobbyBtn">
+          <span class="button-icon">🚪</span>
+          <span class="button-text">Entrar na sala</span>
+        </button>
       </div>
     </form>
 
@@ -55,9 +76,18 @@
     <div id="lobbyPlayers"></div>
 
     <div class="lobby-actions">
-      <button class="menu-button" id="startGameBtn" style="display:none;">Iniciar jogo</button>
-      <button class="menu-button" id="backToMenuFromLobby">Voltar ao Menu</button>
-      <button class="menu-button" id="leaveLobbyBtn" style="display:none;">Sair da sala</button>
+      <button class="menu-button" id="startGameBtn" style="display:none;">
+        <span class="button-icon">🚀</span>
+        <span class="button-text">Iniciar jogo</span>
+      </button>
+      <button class="menu-button" id="backToMenuFromLobby">
+        <span class="button-icon">🔙</span>
+        <span class="button-text">Voltar ao Menu</span>
+      </button>
+      <button class="menu-button" id="leaveLobbyBtn" style="display:none;">
+        <span class="button-icon">🚪</span>
+        <span class="button-text">Sair da sala</span>
+      </button>
     </div>
   </div>
 
@@ -85,7 +115,7 @@
       </div>
       <button class="menu-button small" id="randomCharacterButton">Escolher Aleatoriamente</button>
       <button class="menu-button small">Resetar Personagens</button>
-      <button class="menu-button small" onclick="goBackToMenu()">Voltar ao Menu</button>
+      <button class="menu-button small">Voltar ao Menu</button>
       <button class="menu-button small secret-button" id="regenerateMixesSecretButton" style="display: none; background-color: #ff6b6b; border-color: #ff5252;">🔄 Regenerar Mixes Globais</button>
       <div id="chosenDisplay" class="hidden">
         <h3>Seu personagem:</h3>

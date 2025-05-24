@@ -6,6 +6,75 @@ let playerChosen = false;
 let chosenCharacter = null;
 let currentCategory = 'Todos';
 
+// Sistema de áudio
+let unselectAudio = null;
+
+// Inicializar áudio
+function initAudio() {
+  if (!unselectAudio) {
+    try {
+      console.log('🎵 Inicializando áudio...');
+      unselectAudio = new Audio('/audio.wav');
+      unselectAudio.volume = 0.8; // Aumentando volume para teste
+      unselectAudio.preload = 'auto';
+
+      // Eventos para debug
+      unselectAudio.addEventListener('loadstart', () => console.log('🎵 Áudio: Iniciando carregamento'));
+      unselectAudio.addEventListener('canplay', () => console.log('✅ Áudio: Pronto para tocar'));
+      unselectAudio.addEventListener('error', (e) => console.error('❌ Erro no áudio:', e));
+
+      // Carrega o áudio
+      unselectAudio.load();
+      console.log('🎵 Áudio configurado:', unselectAudio.src);
+
+    } catch (e) {
+      console.warn('❌ Erro ao carregar arquivo de áudio:', e);
+    }
+  }
+}
+
+// Função para tocar som de clique satisfatório quando desmarcar
+function playUnselectSound() {
+  console.log('🔊 playUnselectSound() chamada!');
+
+  if (!unselectAudio) {
+    console.log('🎵 Inicializando áudio...');
+    initAudio();
+  }
+
+  if (!unselectAudio) {
+    console.log('❌ unselectAudio ainda é null após initAudio()');
+    return;
+  }
+
+  try {
+    console.log('🎯 Tentando tocar som de deseleção...');
+    console.log('🔊 Volume do áudio:', unselectAudio.volume);
+    console.log('🎵 Arquivo de áudio:', unselectAudio.src);
+
+    // Aumenta o volume temporariamente para teste
+    unselectAudio.volume = 1.0;
+
+    // Reset do áudio para permitir múltiplas reproduções rápidas
+    unselectAudio.currentTime = 0;
+
+    // Toca o som
+    const playPromise = unselectAudio.play();
+
+    // Trata promessa para navegadores modernos
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.log('✅ Som de deseleção tocou com sucesso! Volume:', unselectAudio.volume);
+      }).catch(error => {
+        console.warn('❌ Erro ao reproduzir áudio:', error);
+      });
+    }
+
+  } catch (e) {
+    console.warn('❌ Erro ao reproduzir som:', e);
+  }
+}
+
 const characterGrid = document.getElementById('characterGrid');
 const chosenCharacterBox = document.getElementById('chosenCharacterBox');
 const selectedCategory = document.getElementById('selectedCategory');
@@ -92,7 +161,7 @@ async function regenerateGlobalMixes() {
 
         // Mostra mensagem no grid se estiver visível
         if (characterGrid) {
-            characterGrid.innerHTML = '<p style="text-align: center; font-size: 1.2em; color: #ff6b6b;">🔄 Regenerando mixes para todos os usuários... Aguarde.</p>';
+            characterGrid.innerHTML = '<p class="loading-text">🔄 Regenerando mixes para todos os usuários... Aguarde ⚡</p>';
         }
 
         console.log('Iniciando regeneração global dos mixes...');
@@ -230,7 +299,7 @@ async function selectCategory(categoryName) {
         const categoryKey = categoryName.replace(' ', '').toLowerCase();
         const apiUrl = `/api/get-mix-chars?category=${categoryKey}`;
 
-        if (characterGrid) { characterGrid.innerHTML = '<p>Carregando personagens do Mix... Aguarde.</p>'; }
+        if (characterGrid) { characterGrid.innerHTML = '<p class="loading-text">🎮 Carregando personagens do Mix... Aguarde ✨</p>'; }
 
         try {
             console.log(`Buscando mix ${categoryKey}...`);
@@ -307,10 +376,11 @@ function createCharacterGridInternal() {
   updateCounter(currentActiveMaxPoints);
 
   if (currentActiveCharacterList && currentActiveCharacterList.length > 0) {
-    currentActiveCharacterList.forEach(charObject => {
+    currentActiveCharacterList.forEach((charObject, index) => {
       const charDiv = document.createElement('div');
       charDiv.classList.add('character');
       charDiv.title = charObject.name;
+      charDiv.dataset.characterIndex = index; // Adiciona índice para debug
 
       const imgContainer = document.createElement('div');
       imgContainer.classList.add('image-container');
@@ -326,6 +396,10 @@ function createCharacterGridInternal() {
       }
 
       charDiv.onclick = async () => {
+        console.log(`🎯 Clique no personagem: ${charObject.name} (índice: ${index})`);
+        console.log(`🔍 Estado atual: locked=${charDiv.classList.contains('locked')}, selected=${charDiv.classList.contains('selected')}`);
+        console.log(`🎮 playerChosen: ${playerChosen}`);
+
         if (!playerChosen) {
           playerChosen = true;
           chosenCharacter = charObject;
@@ -338,14 +412,21 @@ function createCharacterGridInternal() {
           await nextTurn();
         } else {
           if (charDiv.classList.contains('locked')) {
+            console.log(`🔒 ${charObject.name} está locked - não pode desmarcar`);
             // Não permite desmarcar o personagem escolhido
           } else if (charDiv.classList.contains('selected')) {
+            console.log(`✅ DESMARCANDO ${charObject.name} - DEVE TOCAR SOM`);
             charDiv.classList.remove('selected');
             usedPoints--;
+            // Toca som satisfatório quando desmarcar
+            playUnselectSound();
           } else {
+            console.log(`➕ SELECIONANDO ${charObject.name}`);
             if (usedPoints < currentActiveMaxPoints) {
               charDiv.classList.add('selected');
               usedPoints++;
+            } else {
+              console.log(`⚠️ Limite atingido para ${charObject.name}`);
             }
           }
         }
@@ -411,6 +492,15 @@ function showMenu(menuId) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Inicializa o áudio na primeira interação do usuário
+  const initAudioOnFirstClick = () => {
+    initAudio();
+    document.removeEventListener('click', initAudioOnFirstClick);
+    document.removeEventListener('keydown', initAudioOnFirstClick);
+  };
+  document.addEventListener('click', initAudioOnFirstClick);
+  document.addEventListener('keydown', initAudioOnFirstClick);
+
   // Adiciona listener para detectar a sequência secreta
   document.addEventListener('keydown', handleSecretSequence);
 
@@ -529,6 +619,8 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
       openCustomizationMenu();
     });
   }
+
+
   // Lobby
   if (backToMenuFromLobby) {
     backToMenuFromLobby.addEventListener('click', function () {

@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 export default function Home() {
   useEffect(() => {
-    // Redireciona para a página do jogo em React
-    window.location.replace('/game');
+    // Redireciona para o HTML puro servido pela API
+    window.location.replace('/api/serve-html');
   }, []);
 
   return null;

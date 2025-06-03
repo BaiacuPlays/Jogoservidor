@@ -2050,6 +2050,13 @@ body.purple #scaleRange::-moz-range-thumb {
 
 /* CORREÇÕES CRÍTICAS PARA MOBILE */
 @media (max-width: 768px) {
+  /* Garante que o body ocupe toda a altura */
+  html, body {
+    height: 100% !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    overflow-x: hidden !important;
+  }
   /* Força centralização */
   .centered-menu {
     display: flex !important;
@@ -2057,11 +2064,16 @@ body.purple #scaleRange::-moz-range-thumb {
     align-items: center !important;
     justify-content: flex-start !important;
     text-align: center !important;
-    padding: 1rem !important;
+    padding: 1rem 1rem 4rem 1rem !important;
     width: 100% !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    height: auto !important;
     box-sizing: border-box !important;
     overflow-y: auto !important;
+    overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
+    position: relative !important;
   }
 
   /* Força visibilidade dos botões */
@@ -2072,6 +2084,8 @@ body.purple #scaleRange::-moz-range-thumb {
     gap: 1rem !important;
     width: 100% !important;
     margin-top: 1.5rem !important;
+    margin-bottom: 2rem !important;
+    padding-bottom: 2rem !important;
   }
 
   .menu-button {
@@ -2091,9 +2105,29 @@ body.purple #scaleRange::-moz-range-thumb {
     text-decoration: none !important;
     cursor: pointer !important;
     box-sizing: border-box !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 100 !important;
     margin: 0 !important;
     position: relative !important;
     z-index: 100 !important;
+  }
+
+  /* Força estilo dos botões primários */
+  .menu-button.primary {
+    background: linear-gradient(135deg, #4a90e2, #7b68ee) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3) !important;
+  }
+
+  .menu-button.secondary {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
   }
 
   .menu-button.primary {

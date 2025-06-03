@@ -2047,3 +2047,127 @@ body.purple #scaleRange::-moz-range-thumb {
     font-size: 0.85rem;
   }
 }
+
+/* CORREÇÕES CRÍTICAS PARA MOBILE */
+@media (max-width: 768px) {
+  /* Força centralização */
+  .centered-menu {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: center !important;
+    padding: 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Força visibilidade dos botões */
+  .menu-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    margin-top: 1.5rem !important;
+  }
+
+  .menu-button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 300px !important;
+    min-height: 50px !important;
+    padding: 1rem 1.5rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    background-color: #2a2a2a !important;
+    color: #fff !important;
+    border: 2px solid #3a3a3a !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    position: relative !important;
+    z-index: 100 !important;
+  }
+
+  .menu-button.primary {
+    background: linear-gradient(135deg, #4a90e2, #357abd) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3) !important;
+  }
+
+  .menu-button.secondary {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    color: #b0b0b0 !important;
+  }
+
+  /* Força visibilidade do texto */
+  .game-logo h1 {
+    font-size: 2.2rem !important;
+    margin-bottom: 0.5rem !important;
+    text-align: center !important;
+    color: #fff !important;
+  }
+
+  .game-subtitle {
+    font-size: 0.9rem !important;
+    margin-bottom: 1.5rem !important;
+    text-align: center !important;
+    color: #b0b0b0 !important;
+  }
+
+  /* Força layout do tutorial */
+  .tutorial-section {
+    width: 100% !important;
+    padding: 1rem !important;
+    margin: 1rem 0 !important;
+    text-align: center !important;
+  }
+
+  .tutorial-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+
+  .tutorial-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+  }
+
+  .tutorial-icon {
+    font-size: 2rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .tutorial-text {
+    margin-left: 0 !important;
+    text-align: center !important;
+  }
+
+  .tutorial-text strong {
+    font-size: 1rem !important;
+    color: #fff !important;
+  }
+
+  .tutorial-text p {
+    font-size: 0.85rem !important;
+    line-height: 1.4 !important;
+    color: #b0b0b0 !important;
+    margin-top: 0.5rem !important;
+  }
+}

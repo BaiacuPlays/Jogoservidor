@@ -6,16 +6,33 @@ let playerChosen = false;
 let chosenCharacter = null;
 let currentCategory = 'Todos';
 
-// Detecção de dispositivo móvel
+// Detecção de dispositivo móvel melhorada
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isAndroid = /Android/.test(navigator.userAgent);
+const isTablet = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(navigator.userAgent);
+
+// Detecção de tamanho de tela
+const getScreenSize = () => {
+  const width = window.innerWidth;
+  if (width <= 320) return 'tiny';
+  if (width <= 480) return 'small';
+  if (width <= 768) return 'medium';
+  if (width <= 1200) return 'large';
+  return 'xlarge';
+};
 
 // Configurações de performance para mobile
 const MOBILE_CONFIG = {
   reducedAnimations: isMobile,
   lazyLoadImages: true,
   optimizedScrolling: true,
-  touchFeedback: isTouch
+  touchFeedback: isTouch,
+  screenSize: getScreenSize(),
+  isIOS: isIOS,
+  isAndroid: isAndroid,
+  isTablet: isTablet
 };
 
 // Sistema de áudio
@@ -657,26 +674,79 @@ function showMenu(menuId) {
   }
 }
 
+// Função para aplicar otimizações específicas do dispositivo
+function applyDeviceOptimizations() {
+  // Adicionar classes CSS baseadas no dispositivo
+  document.body.classList.add('device-' + MOBILE_CONFIG.screenSize);
+
+  if (isMobile) {
+    document.body.classList.add('mobile-device');
+    console.log('📱 Dispositivo móvel detectado - aplicando otimizações');
+  }
+
+  if (isTablet) {
+    document.body.classList.add('tablet-device');
+    console.log('📱 Tablet detectado');
+  }
+
+  if (isIOS) {
+    document.body.classList.add('ios-device');
+    console.log('🍎 iOS detectado');
+  }
+
+  if (isAndroid) {
+    document.body.classList.add('android-device');
+    console.log('🤖 Android detectado');
+  }
+
+  // Configurar viewport dinâmico para mobile
+  const setViewportHeight = () => {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+    // Atualizar configuração de tela
+    MOBILE_CONFIG.screenSize = getScreenSize();
+
+    // Aplicar classe de tamanho atualizada
+    document.body.className = document.body.className.replace(/device-(tiny|small|medium|large|xlarge)/g, '');
+    document.body.classList.add('device-' + MOBILE_CONFIG.screenSize);
+  };
+
+  setViewportHeight();
+
+  // Listeners para mudanças de viewport
+  window.addEventListener('resize', () => {
+    clearTimeout(window.resizeTimeout);
+    window.resizeTimeout = setTimeout(setViewportHeight, 100);
+  });
+
+  window.addEventListener('orientationchange', () => {
+    setTimeout(setViewportHeight, 200);
+  });
+
+  // Otimizações específicas para iOS
+  if (isIOS) {
+    // Prevenir bounce scroll
+    document.body.style.overscrollBehavior = 'none';
+
+    // Melhorar performance de scroll
+    document.body.style.webkitOverflowScrolling = 'touch';
+  }
+
+  // Otimizações para Android
+  if (isAndroid) {
+    // Melhorar performance de animações
+    document.body.style.willChange = 'transform';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+  // Aplicar otimizações do dispositivo
+  applyDeviceOptimizations();
+
   // Inicializar otimizações mobile
   if (isMobile) {
-    console.log('📱 Dispositivo móvel detectado - aplicando otimizações');
     optimizeScrolling();
-
-    // Adicionar classe CSS para mobile
-    document.body.classList.add('mobile-device');
-
-    // Configurar viewport dinâmico para mobile
-    const setViewportHeight = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-
-    setViewportHeight();
-    window.addEventListener('resize', setViewportHeight);
-    window.addEventListener('orientationchange', () => {
-      setTimeout(setViewportHeight, 100);
-    });
   }
 
   // Inicializa o áudio na primeira interação do usuário

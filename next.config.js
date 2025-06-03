@@ -77,16 +77,6 @@ const nextConfig = {
       },
     ];
   },
-
-  // Configuração para servir o arquivo HTML diretamente
-  async rewrites() {
-    return [
-      {
-        source: '/game',
-        destination: '/index.html',
-      },
-    ];
-  },
 }
 
 module.exports = nextConfig; 

@@ -1,3 +1,4 @@
+import { kv } from '@vercel/kv';
 import { getRandomCharacters } from '../../utils/helpers.js';
 import { uniqueCharacters } from '../../data/characterData.js';
 

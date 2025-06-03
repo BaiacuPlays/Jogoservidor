@@ -1,6 +1,6 @@
 import { kv } from '@vercel/kv';
-import { getRandomCharacters } from '../utils/helpers.js';
-import { uniqueCharacters } from '../data/characterData.js';
+import { getRandomCharacters } from '../../utils/helpers.js';
+import { uniqueCharacters } from '../../data/characterData.js';
 
 // Função para gerar novos mixes
 async function generateNewMixes() {

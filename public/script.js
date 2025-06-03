@@ -1077,7 +1077,6 @@ function setupEventListeners() {
   }
 
   const themeSelect = document.getElementById('themeSelect');
-  const scaleRange = document.getElementById('scaleRange');
 
   if (themeSelect) {
     themeSelect.addEventListener('change', function() {
@@ -1085,21 +1084,6 @@ function setupEventListeners() {
       document.body.className = theme;
       localStorage.setItem('theme', theme);
     });
-  }
-
-  if (scaleRange) {
-    scaleRange.addEventListener('input', function() {
-      const scale = this.value;
-      document.documentElement.style.setProperty('--interface-scale', scale);
-      document.querySelector('.scale-value').textContent = `${Math.round(scale * 100)}%`;
-      localStorage.setItem('scale', scale);
-    });
-
-    // Carregar escala salva
-    const savedScale = localStorage.getItem('scale') || '1';
-    document.documentElement.style.setProperty('--interface-scale', savedScale);
-    document.getElementById('scaleRange').value = savedScale;
-    document.querySelector('.scale-value').textContent = `${Math.round(savedScale * 100)}%`;
   }
 
   const customizationMenuButton = document.querySelector('#customizationMenu .menu-button');

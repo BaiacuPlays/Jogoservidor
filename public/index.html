@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <meta name="description" content="Pizzaria del Gatito - Um jogo divertido de seleção de personagens online e local">
-  <meta name="keywords" content="jogo, personagens, pizzaria, gatito, online, multiplayer">
-  <meta name="author" content="Pizzaria del Gatito Team">
+  <meta name="description" content="Character Clash - O jogo de adivinhação estilo 'Cara a Cara' com personagens de games. Adivinhe qual personagem seu oponente escolheu!">
+  <meta name="keywords" content="jogo, cara a cara, adivinhação, personagens, character clash, online, multiplayer, nintendo, gaming, guess who">
+  <meta name="author" content="Character Clash Team">
   <meta name="theme-color" content="#1a1a1a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Pizzaria del Gatito">
+  <meta name="apple-mobile-web-app-title" content="Character Clash">
   <meta name="format-detection" content="telephone=no">
   <meta name="msapplication-tap-highlight" content="no">
 
-  <title>Pizzaria del Gatito, the game</title>
+  <title>Character Clash - Jogo de Adivinhação Estilo "Cara a Cara"</title>
 
   <!-- Preload critical resources -->
-  <link rel="preload" href="/styles/styles.css" as="style">
-  <link rel="preload" href="/script.js" as="script">
+  <link rel="preload" href="/styles/styles.css?v=2" as="style">
+  <link rel="preload" href="/script.js?v=2" as="script">
 
   <!-- DNS prefetch for external resources -->
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
@@ -27,8 +27,8 @@
   <!-- Font loading optimization -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 
   <!-- Favicon and app icons -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -37,47 +37,147 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/manifest.json">
 
-  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="/styles/styles.css?v=2">
+
+  <!-- Estilos críticos inline para garantir carregamento -->
+  <style>
+    .game-logo h1 {
+      font-size: 3.5rem !important;
+      font-weight: 800 !important;
+      background: linear-gradient(45deg, #4a90e2, #7b68ee, #ff6b6b) !important;
+      background-size: 200% 200% !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      background-clip: text !important;
+      animation: gradientShift 3s ease-in-out infinite !important;
+      margin: 0 !important;
+      text-shadow: 0 0 30px rgba(74, 144, 226, 0.3) !important;
+      letter-spacing: 2px !important;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .tutorial-section {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border-radius: 16px !important;
+      padding: 2rem !important;
+      margin: 2rem 0 !important;
+      backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .menu-button.primary {
+      background: linear-gradient(135deg, #4a90e2, #7b68ee) !important;
+      border: none !important;
+      color: white !important;
+      font-weight: 600 !important;
+      font-size: 1.1rem !important;
+      padding: 1rem 2rem !important;
+      min-width: 250px !important;
+      box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3) !important;
+    }
+  </style>
 </head>
 <body>
   <div id="startMenu" class="centered-menu">
     <!-- As ondas serão criadas pelo JS -->
-    <h2>🍕 Pizzaria del Gatito</h2>
-    <button class="menu-button" id="playLocalButton">
-      <span class="button-icon">🎮</span>
-      <span class="button-text">Jogar Local</span>
-    </button>
-    <button class="menu-button" id="playOnlineButton">
-      <span class="button-icon">🌐</span>
-      <span class="button-text">Jogar Online</span>
-    </button>
-    <button class="menu-button" id="customizationButton">
-      <span class="button-icon">⚙️</span>
-      <span class="button-text">Customização</span>
-    </button>
+    <div class="game-logo">
+      <h1>⚔️ CHARACTER CLASH</h1>
+      <p class="game-subtitle">O Jogo de Adivinhação Definitivo - Estilo "Cara a Cara"</p>
+    </div>
+
+    <div class="tutorial-section">
+      <h3>🎯 Como Jogar - Estilo "Cara a Cara"</h3>
+      <div class="tutorial-grid">
+        <div class="tutorial-item">
+          <span class="tutorial-icon">🤔</span>
+          <div class="tutorial-text">
+            <strong>Objetivo</strong>
+            <p>Adivinhe qual personagem seu oponente escolheu fazendo perguntas estratégicas!</p>
+          </div>
+        </div>
+        <div class="tutorial-item">
+          <span class="tutorial-icon">❓</span>
+          <div class="tutorial-text">
+            <strong>Como Funciona</strong>
+            <p>Faça perguntas como "É da Nintendo?" e elimine personagens baseado nas respostas</p>
+          </div>
+        </div>
+        <div class="tutorial-item">
+          <span class="tutorial-icon">🎮</span>
+          <div class="tutorial-text">
+            <strong>Modo Local</strong>
+            <p>Jogue com amigos no mesmo dispositivo, cada um escolhe um personagem secreto</p>
+          </div>
+        </div>
+        <div class="tutorial-item">
+          <span class="tutorial-icon">🌐</span>
+          <div class="tutorial-text">
+            <strong>Modo Online</strong>
+            <p>Desafie jogadores do mundo todo em salas privadas ou públicas</p>
+          </div>
+        </div>
+        <div class="tutorial-item">
+          <span class="tutorial-icon">🎲</span>
+          <div class="tutorial-text">
+            <strong>Categorias</strong>
+            <p>Nintendo, Antropomórficos ou Mixes diários com 50 personagens cada</p>
+          </div>
+        </div>
+        <div class="tutorial-item">
+          <span class="tutorial-icon">🏆</span>
+          <div class="tutorial-text">
+            <strong>Vitória</strong>
+            <p>Primeiro a adivinhar o personagem do oponente vence a partida!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-buttons">
+      <button class="menu-button primary" id="playLocalButton">
+        <span class="button-icon">🎮</span>
+        <span class="button-text">Jogar Local</span>
+      </button>
+      <button class="menu-button primary" id="playOnlineButton">
+        <span class="button-icon">🌐</span>
+        <span class="button-text">Jogar Online</span>
+      </button>
+      <button class="menu-button secondary" id="customizationButton">
+        <span class="button-icon">⚙️</span>
+        <span class="button-text">Configurações</span>
+      </button>
+    </div>
 
   </div>
 
   <div id="customizationMenu" class="centered-menu" style="display: none;">
-    <h2>⚙️ Customização</h2>
-    <div class="customization-group">
-      <label for="themeSelect">🎨 Tema:</label>
-      <select id="themeSelect">
-        <option value="dark">🌙 Escuro</option>
-        <option value="light">☀️ Claro</option>
-        <option value="blue">💙 Azul</option>
-        <option value="green">💚 Verde</option>
-        <option value="purple">💜 Roxo</option>
-      </select>
+    <div class="settings-header">
+      <h2>⚙️ Configurações</h2>
+      <p class="settings-subtitle">Personalize sua experiência de jogo</p>
     </div>
-    <div class="customization-group">
-      <label for="scaleRange">📏 Tamanho da interface:</label>
-      <input type="range" id="scaleRange" min="0.5" max="1.5" step="0.1" value="1">
-      <div class="scale-value">100%</div>
+
+    <div class="settings-content">
+      <div class="customization-group">
+        <label for="themeSelect">🎨 Tema Visual</label>
+        <select id="themeSelect" class="theme-selector">
+          <option value="dark">🌙 Escuro (Padrão)</option>
+          <option value="light">☀️ Claro</option>
+          <option value="blue">💙 Azul Oceano</option>
+          <option value="green">💚 Verde Floresta</option>
+          <option value="purple">💜 Roxo Místico</option>
+        </select>
+        <p class="setting-description">Escolha o tema que mais combina com você</p>
+      </div>
     </div>
-    <button class="menu-button" id="backToMenuFromCustomization">
+
+    <button class="menu-button secondary" id="backToMenuFromCustomization">
       <span class="button-icon">🔙</span>
-      <span class="button-text">Voltar</span>
+      <span class="button-text">Voltar ao Menu</span>
     </button>
   </div>
 
@@ -123,7 +223,7 @@
 
   <main style="display: none;">
     <header>
-      <h1>Pizzaria del Gatito, the game</h1>
+      <h1>⚔️ CHARACTER CLASH</h1>
       <div id="point-counter">Personagens restantes: 128</div>
       <div class="dropdown">
         <button id="categoryButton" class="menu-button small" type="button">
@@ -156,7 +256,7 @@
     <section class="character-grid" id="characterGrid"></section>
   </main>
 
-  <script type="module" src="/script.js"></script>
+  <script type="module" src="/script.js?v=2"></script>
 
   <!-- Service Worker Registration -->
   <script>

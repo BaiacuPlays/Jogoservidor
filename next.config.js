@@ -77,6 +77,16 @@ const nextConfig = {
       },
     ];
   },
+  // Configuração para redirecionamentos
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/index.html',
+        permanent: false,
+      },
+    ];
+  },
   // Configuração para API routes
   async rewrites() {
     return {

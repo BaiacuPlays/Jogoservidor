@@ -1,7 +1,7 @@
 {
-  "name": "Pizzaria del Gatito",
-  "short_name": "Gatito Game",
-  "description": "Um jogo divertido de seleção de personagens online e local",
+  "name": "Character Clash - Jogo de Adivinhação Estilo Cara a Cara",
+  "short_name": "Character Clash",
+  "description": "O jogo de adivinhação estilo 'Cara a Cara' com personagens de games. Adivinhe qual personagem seu oponente escolheu!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1a1a",

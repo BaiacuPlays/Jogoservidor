@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 export default function Home() {
   useEffect(() => {
-    // Redireciona para o arquivo HTML que funcionava
-    window.location.replace('/index.html');
+    // Redireciona para a página do jogo em React
+    window.location.replace('/game');
   }, []);
 
   return null;

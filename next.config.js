@@ -3,8 +3,14 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: ['localhost'],
-    unoptimized: true
+    unoptimized: true,
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
+  // Otimizações para mobile
+  compress: true,
+  poweredByHeader: false,
   // Configuração para servir arquivos estáticos
   async headers() {
     return [
@@ -14,6 +20,49 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/manifest.json',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400',
+          },
+          {
+            key: 'Content-Type',
+            value: 'application/manifest+json',
+          },
+        ],
+      },
+      {
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Content-Type',
+            value: 'application/javascript',
+          },
+        ],
+      },
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
           },
         ],
       },
@@ -39,16 +88,8 @@ const nextConfig = {
       ],
     };
   },
-  // Configuração para exportação estática
-  output: 'standalone',
   // Configuração para servir arquivos estáticos
   trailingSlash: true,
-  // Desabilitar a geração de páginas dinâmicas
-  exportPathMap: async function () {
-    return {
-      '/': { page: '/' },
-    };
-  },
 }
 
 module.exports = nextConfig; 

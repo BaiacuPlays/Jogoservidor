@@ -1,17 +1,9 @@
-import fs from 'fs';
-import path from 'path';
-
-export default function Home({ html }) {
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+export default function Home() {
+  return (
+    <div>
+      <h1>Pizzaria del Gatito - Next.js funcionando!</h1>
+      <p>Se você está vendo isso, o Next.js está rodando corretamente.</p>
+      <a href="/index.html">Ir para o jogo</a>
+    </div>
+  );
 }
-
-export async function getStaticProps() {
-  const filePath = path.join(process.cwd(), 'public', 'index.html');
-  const html = fs.readFileSync(filePath, 'utf8');
-  
-  return {
-    props: {
-      html,
-    },
-  };
-} 

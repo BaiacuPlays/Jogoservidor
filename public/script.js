@@ -6,6 +6,18 @@ let playerChosen = false;
 let chosenCharacter = null;
 let currentCategory = 'Todos';
 
+// Detecção de dispositivo móvel
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+// Configurações de performance para mobile
+const MOBILE_CONFIG = {
+  reducedAnimations: isMobile,
+  lazyLoadImages: true,
+  optimizedScrolling: true,
+  touchFeedback: isTouch
+};
+
 // Sistema de áudio
 let unselectAudio = null;
 
@@ -73,6 +85,123 @@ function playUnselectSound() {
   } catch (e) {
     console.warn('❌ Erro ao reproduzir som:', e);
   }
+}
+
+// Sistema de feedback tátil para mobile
+function provideTouchFeedback() {
+  if (isTouch && navigator.vibrate) {
+    navigator.vibrate(50); // Vibração curta de 50ms
+  }
+}
+
+// Sistema de lazy loading para imagens
+function setupLazyLoading() {
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+            img.classList.remove('lazy');
+            observer.unobserve(img);
+          }
+        }
+      });
+    }, {
+      rootMargin: '50px 0px',
+      threshold: 0.01
+    });
+
+    return imageObserver;
+  }
+  return null;
+}
+
+// Otimização de scroll para mobile
+function optimizeScrolling() {
+  if (isMobile) {
+    // Reduz a frequência de eventos de scroll
+    let scrollTimeout;
+    const originalScrollHandler = window.onscroll;
+
+    window.onscroll = function(e) {
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+
+      scrollTimeout = setTimeout(() => {
+        if (originalScrollHandler) {
+          originalScrollHandler.call(this, e);
+        }
+      }, 16); // ~60fps
+    };
+  }
+}
+
+// Sistema de gestos touch
+function setupTouchGestures(element) {
+  if (!isTouch || !element) return;
+
+  let startX, startY, startTime;
+  let isLongPress = false;
+  let longPressTimer;
+
+  element.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    startTime = Date.now();
+    isLongPress = false;
+
+    // Long press detection
+    longPressTimer = setTimeout(() => {
+      isLongPress = true;
+      provideTouchFeedback();
+      // Trigger long press action if needed
+      if (element.dataset.longPressAction) {
+        element.dispatchEvent(new CustomEvent('longpress'));
+      }
+    }, 500);
+
+    // Visual feedback
+    element.style.transform = 'scale(0.95)';
+  }, { passive: true });
+
+  element.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - startX);
+    const deltaY = Math.abs(touch.clientY - startY);
+
+    // Cancel long press if moved too much
+    if (deltaX > 10 || deltaY > 10) {
+      clearTimeout(longPressTimer);
+      isLongPress = false;
+    }
+  }, { passive: true });
+
+  element.addEventListener('touchend', (e) => {
+    clearTimeout(longPressTimer);
+
+    // Reset visual feedback
+    element.style.transform = '';
+
+    if (!isLongPress) {
+      const endTime = Date.now();
+      const deltaTime = endTime - startTime;
+
+      // Quick tap
+      if (deltaTime < 200) {
+        provideTouchFeedback();
+      }
+    }
+  }, { passive: true });
+
+  element.addEventListener('touchcancel', () => {
+    clearTimeout(longPressTimer);
+    element.style.transform = '';
+  }, { passive: true });
 }
 
 const characterGrid = document.getElementById('characterGrid');
@@ -386,8 +515,24 @@ function createCharacterGridInternal() {
       imgContainer.classList.add('image-container');
 
       const img = document.createElement('img');
-      img.src = charObject.image;
+
+      // Implementa lazy loading para mobile
+      if (MOBILE_CONFIG.lazyLoadImages && 'IntersectionObserver' in window) {
+        img.dataset.src = charObject.image;
+        img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMyYTJhMmEiLz48L3N2Zz4='; // placeholder
+        img.classList.add('lazy');
+
+        // Setup lazy loading observer
+        const imageObserver = setupLazyLoading();
+        if (imageObserver) {
+          imageObserver.observe(img);
+        }
+      } else {
+        img.src = charObject.image;
+      }
+
       img.alt = charObject.name;
+      img.loading = 'lazy'; // Native lazy loading fallback
 
       imgContainer.appendChild(img);
       charDiv.appendChild(imgContainer);
@@ -395,10 +540,16 @@ function createCharacterGridInternal() {
         characterGrid.appendChild(charDiv);
       }
 
-      charDiv.onclick = async () => {
-        console.log(`🎯 Clique no personagem: ${charObject.name} (índice: ${index})`);
+      // Função de clique/touch unificada
+      const handleCharacterInteraction = async () => {
+        console.log(`🎯 Interação no personagem: ${charObject.name} (índice: ${index})`);
         console.log(`🔍 Estado atual: locked=${charDiv.classList.contains('locked')}, selected=${charDiv.classList.contains('selected')}`);
         console.log(`🎮 playerChosen: ${playerChosen}`);
+
+        // Feedback tátil para mobile
+        if (isTouch) {
+          provideTouchFeedback();
+        }
 
         if (!playerChosen) {
           playerChosen = true;
@@ -432,6 +583,21 @@ function createCharacterGridInternal() {
         }
         updateCounter(currentActiveMaxPoints);
       };
+
+      // Configurar eventos de interação
+      charDiv.onclick = handleCharacterInteraction;
+
+      // Adicionar gestos touch para mobile
+      if (isTouch) {
+        setupTouchGestures(charDiv);
+
+        // Long press para informações do personagem (futuro)
+        charDiv.dataset.longPressAction = 'info';
+        charDiv.addEventListener('longpress', () => {
+          console.log(`ℹ️ Long press em ${charObject.name}`);
+          // Aqui pode adicionar modal com informações do personagem
+        });
+      }
     });
   } else {
     if (characterGrid && selectedCategory && characterGrid.innerHTML === '') {
@@ -492,14 +658,37 @@ function showMenu(menuId) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Inicializar otimizações mobile
+  if (isMobile) {
+    console.log('📱 Dispositivo móvel detectado - aplicando otimizações');
+    optimizeScrolling();
+
+    // Adicionar classe CSS para mobile
+    document.body.classList.add('mobile-device');
+
+    // Configurar viewport dinâmico para mobile
+    const setViewportHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(setViewportHeight, 100);
+    });
+  }
+
   // Inicializa o áudio na primeira interação do usuário
   const initAudioOnFirstClick = () => {
     initAudio();
     document.removeEventListener('click', initAudioOnFirstClick);
     document.removeEventListener('keydown', initAudioOnFirstClick);
+    document.removeEventListener('touchstart', initAudioOnFirstClick);
   };
   document.addEventListener('click', initAudioOnFirstClick);
   document.addEventListener('keydown', initAudioOnFirstClick);
+  document.addEventListener('touchstart', initAudioOnFirstClick);
 
   // Adiciona listener para detectar a sequência secreta
   document.addEventListener('keydown', handleSecretSequence);

@@ -77,29 +77,7 @@ const nextConfig = {
       },
     ];
   },
-  // Configuração para redirecionamentos
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/index.html',
-        permanent: false,
-      },
-    ];
-  },
-  // Configuração para API routes
-  async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: '/api/:path*',
-          destination: '/api/:path*',
-        },
-      ],
-    };
-  },
-  // Configuração para servir arquivos estáticos
-  trailingSlash: true,
+
 }
 
 module.exports = nextConfig; 

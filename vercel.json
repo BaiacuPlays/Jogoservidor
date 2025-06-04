@@ -1,14 +1,8 @@
 {
   "framework": "nextjs",
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/index.html"
-    }
-  ],
   "crons": [
     {
-      "path": "/public/index.html",
+      "path": "/api/scheduled/generate-mixes",
       "schedule": "0 0 * * *"
     }
   ],

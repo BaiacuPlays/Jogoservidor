@@ -13,6 +13,12 @@ const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 const isAndroid = /Android/.test(navigator.userAgent);
 const isTablet = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(navigator.userAgent);
 
+// Detecção adicional de características móveis
+const hasHover = window.matchMedia('(hover: hover)').matches;
+const hasCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+const isSmallScreen = window.innerWidth <= 768;
+const isTinyScreen = window.innerWidth <= 480;
+
 // Detecção de tamanho de tela
 const getScreenSize = () => {
   const width = window.innerWidth;
@@ -25,15 +31,42 @@ const getScreenSize = () => {
 
 // Configurações de performance para mobile
 const MOBILE_CONFIG = {
-  reducedAnimations: isMobile,
+  reducedAnimations: isMobile || hasCoarsePointer,
   lazyLoadImages: true,
   optimizedScrolling: true,
   touchFeedback: isTouch,
   screenSize: getScreenSize(),
   isIOS: isIOS,
   isAndroid: isAndroid,
-  isTablet: isTablet
+  isTablet: isTablet,
+  hasHover: hasHover,
+  hasCoarsePointer: hasCoarsePointer,
+  isSmallScreen: isSmallScreen,
+  isTinyScreen: isTinyScreen
 };
+
+// Aplicar configurações móveis globais
+if (isMobile || isTouch) {
+  document.body.classList.add('mobile-device');
+
+  // Prevenir zoom duplo toque no iOS
+  if (isIOS) {
+    document.body.classList.add('ios-device');
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+      const now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+  }
+
+  // Configurações específicas para Android
+  if (isAndroid) {
+    document.body.classList.add('android-device');
+  }
+}
 
 // Sistema de áudio
 let unselectAudio = null;
@@ -154,6 +187,45 @@ function optimizeScrolling() {
         }
       }, 16); // ~60fps
     };
+  }
+}
+
+// Função para melhorar o viewport em dispositivos móveis
+function optimizeMobileViewport() {
+  if (!isMobile && !isTouch) return;
+
+  // Função para definir altura do viewport
+  const setViewportHeight = () => {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  };
+
+  // Define altura inicial
+  setViewportHeight();
+
+  // Atualiza em mudanças de orientação e redimensionamento
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(setViewportHeight, 100);
+  });
+
+  window.addEventListener('orientationchange', () => {
+    setTimeout(setViewportHeight, 500); // Delay para iOS
+  });
+
+  // Previne zoom em inputs no iOS
+  if (isIOS) {
+    const inputs = document.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+      input.addEventListener('focus', () => {
+        input.style.fontSize = '16px';
+      });
+
+      input.addEventListener('blur', () => {
+        input.style.fontSize = '';
+      });
+    });
   }
 }
 
@@ -1486,6 +1558,13 @@ function loadSettings() {
 async function initializeGame() {
     try {
         console.log('Inicializando jogo...');
+
+        // Otimizações móveis
+        optimizeMobileViewport();
+        optimizeScrolling();
+
+        // Inicializa áudio
+        initAudio();
 
         // Verifica se os mixes precisam ser atualizados
         await checkMixesUpdate();

@@ -1,27 +1,25 @@
-import fs from 'fs';
-import path from 'path';
+import { useEffect } from 'react';
 
-export default function Home({ htmlContent }) {
-  return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
-}
+export default function Home() {
+  useEffect(() => {
+    // Força o redirecionamento para index.html usando replace para não criar histórico
+    if (typeof window !== 'undefined') {
+      window.location.replace('/index.html');
+    }
+  }, []);
 
-export async function getStaticProps() {
-  try {
-    // Lê o arquivo HTML da pasta public
-    const htmlPath = path.join(process.cwd(), 'public', 'index.html');
-    const htmlContent = fs.readFileSync(htmlPath, 'utf8');
-
-    return {
-      props: {
-        htmlContent
-      }
-    };
-  } catch (error) {
-    console.error('Erro ao ler HTML:', error);
-    return {
-      props: {
-        htmlContent: '<html><body><h1>Erro ao carregar o jogo</h1></body></html>'
-      }
-    };
-  }
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      fontFamily: 'Arial, sans-serif'
+    }}>
+      <div style={{ textAlign: 'center' }}>
+        <h1>Carregando Character Clash...</h1>
+        <p>Se não for redirecionado automaticamente, <a href="/index.html">clique aqui</a>.</p>
+      </div>
+    </div>
+  );
 }

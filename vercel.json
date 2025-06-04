@@ -1,10 +1,9 @@
 {
   "framework": "nextjs",
-  "redirects": [
+  "rewrites": [
     {
       "source": "/",
-      "destination": "/index.html",
-      "permanent": false
+      "destination": "/index.html"
     }
   ],
   "crons": [

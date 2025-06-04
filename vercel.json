@@ -1,5 +1,12 @@
 {
   "framework": "nextjs",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/index.html",
+      "permanent": false
+    }
+  ],
   "crons": [
     {
       "path": "/public/index.html",

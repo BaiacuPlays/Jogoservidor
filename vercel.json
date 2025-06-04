@@ -2,7 +2,7 @@
   "framework": "nextjs",
   "crons": [
     {
-      "path": "/public/html",
+      "path": "/public/index.html",
       "schedule": "0 0 * * *"
     }
   ],

@@ -2,7 +2,7 @@
   "framework": "nextjs",
   "crons": [
     {
-      "path": "/api/scheduled/generate-mixes",
+      "path": "/public/html",
       "schedule": "0 0 * * *"
     }
   ],

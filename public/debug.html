@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug - Character Clash</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #1a1a1a;
+      color: white;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .success { background: #4caf50; }
+    .error { background: #f44336; }
+    .warning { background: #ff9800; }
+    .info { background: #2196f3; }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background: #4a90e2;
+      color: white;
+      cursor: pointer;
+    }
+    pre {
+      background: #333;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔧 Debug Character Clash</h1>
+  
+  <div id="results"></div>
+  
+  <button onclick="testAll()">🧪 Testar Tudo</button>
+  <button onclick="testScripts()">📜 Testar Scripts</button>
+  <button onclick="testButtons()">🔘 Testar Botões</button>
+  <button onclick="window.location.href='index.html'">🎮 Ir para o Jogo</button>
+
+  <script>
+    function addResult(message, type = 'info') {
+      const resultsDiv = document.getElementById('results');
+      const div = document.createElement('div');
+      div.className = `status ${type}`;
+      div.innerHTML = message;
+      resultsDiv.appendChild(div);
+    }
+    
+    function testScripts() {
+      addResult('🔄 Testando carregamento de scripts...', 'info');
+      
+      // Testar se os scripts carregaram
+      const hasCharacters = typeof window.characters !== 'undefined';
+      const hasHelpers = typeof window.shuffleArray !== 'undefined';
+      const hasGetRandom = typeof window.getRandomCharacters !== 'undefined';
+      
+      addResult(`📊 Characters: ${hasCharacters ? '✅' : '❌'}`, hasCharacters ? 'success' : 'error');
+      addResult(`🔧 ShuffleArray: ${hasHelpers ? '✅' : '❌'}`, hasHelpers ? 'success' : 'error');
+      addResult(`🎲 GetRandomCharacters: ${hasGetRandom ? '✅' : '❌'}`, hasGetRandom ? 'success' : 'error');
+      
+      if (hasCharacters) {
+        addResult(`📈 Total de personagens: ${window.characters.length}`, 'info');
+      }
+    }
+    
+    function testButtons() {
+      addResult('🔄 Testando botões...', 'info');
+      
+      const playLocal = document.getElementById('playLocalButton');
+      const playOnline = document.getElementById('playOnlineButton');
+      const customization = document.getElementById('customizationButton');
+      
+      addResult(`🎮 Jogar Local: ${playLocal ? '✅' : '❌'}`, playLocal ? 'success' : 'error');
+      addResult(`🌐 Jogar Online: ${playOnline ? '✅' : '❌'}`, playOnline ? 'success' : 'error');
+      addResult(`⚙️ Configurações: ${customization ? '✅' : '❌'}`, customization ? 'success' : 'error');
+    }
+    
+    function testAll() {
+      document.getElementById('results').innerHTML = '';
+      
+      addResult('🚀 Iniciando testes completos...', 'info');
+      addResult(`🌐 URL: ${window.location.href}`, 'info');
+      addResult(`📱 User Agent: ${navigator.userAgent}`, 'info');
+      
+      testScripts();
+      testButtons();
+      
+      addResult('✅ Testes concluídos!', 'success');
+    }
+    
+    // Auto-teste
+    setTimeout(testAll, 1000);
+  </script>
+  
+  <!-- Carregamento dos scripts para teste -->
+  <script src="/data/characterData.js?v=6"></script>
+  <script src="/utils/helpers.js?v=6"></script>
+  <script>
+    console.log('🔧 Scripts de debug carregados');
+  </script>
+</body>
+</html>

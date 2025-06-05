@@ -6,7 +6,5 @@
       "schedule": "0 0 * * *"
     }
   ],
-  "regions": [
-    "gru1"
-  ]
+  "regions": ["gru1"]
 }

@@ -1,19 +1,12 @@
 ﻿{
-  "rewrites": [
+  "framework": "nextjs",
+  "crons": [
     {
-      "source": "/",
-      "destination": "/index.html"
+      "path": "/api/scheduled/generate-mixes",
+      "schedule": "0 0 * * *"
     }
   ],
-  "headers": [
-    {
-      "source": "/index.html",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/html; charset=utf-8"
-        }
-      ]
-    }
+  "regions": [
+    "gru1"
   ]
 }

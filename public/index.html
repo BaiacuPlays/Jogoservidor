@@ -2,153 +2,14 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, interactive-widget=resizes-content, shrink-to-fit=no">
-  <meta name="description" content="Character Clash - O jogo de adivinhação estilo 'Cara a Cara' com personagens de games. Adivinhe qual personagem seu oponente escolheu!">
-  <meta name="keywords" content="jogo, cara a cara, adivinhação, personagens, character clash, online, multiplayer, nintendo, gaming, guess who">
-  <meta name="author" content="Character Clash Team">
-  <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f5f5f5" media="(prefers-color-scheme: light)">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Character Clash">
-  <meta name="format-detection" content="telephone=no">
-  <meta name="msapplication-tap-highlight" content="no">
-  <meta name="color-scheme" content="dark light">
-  <meta name="supported-color-schemes" content="dark light">
-
-  <!-- Melhorias para PWA e Mobile -->
-  <meta name="application-name" content="Character Clash">
-  <meta name="msapplication-TileColor" content="#1a1a1a">
-  <meta name="msapplication-config" content="/browserconfig.xml">
-  <meta name="apple-touch-fullscreen" content="yes">
-  <meta name="apple-mobile-web-app-orientations" content="portrait landscape">
-
-  <!-- Prevenção de zoom automático em iOS -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
-
-  <title>Character Clash - Jogo de Adivinhação Estilo "Cara a Cara"</title>
-
-  <!-- Preload critical resources -->
-  <link rel="preload" href="/styles/styles.css?v=2" as="style">
-  <link rel="preload" href="/script.js?v=2" as="script">
-
-  <!-- DNS prefetch for external resources -->
-  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-  <!-- Font loading optimization -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-
-  <!-- Favicon and app icons -->
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="manifest" href="/manifest.json">
-
-  <link rel="stylesheet" href="/styles/styles.css?v=2">
-
-  <!-- Estilos críticos inline para garantir carregamento -->
-  <style>
-    .game-logo h1 {
-      font-size: 3.5rem !important;
-      font-weight: 800 !important;
-      background: linear-gradient(45deg, #4a90e2, #7b68ee, #ff6b6b) !important;
-      background-size: 200% 200% !important;
-      -webkit-background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-      background-clip: text !important;
-      animation: gradientShift 3s ease-in-out infinite !important;
-      margin: 0 !important;
-      text-shadow: 0 0 30px rgba(74, 144, 226, 0.3) !important;
-      letter-spacing: 2px !important;
-    }
-
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-
-    .tutorial-section {
-      background: rgba(255, 255, 255, 0.05) !important;
-      border-radius: 16px !important;
-      padding: 2rem !important;
-      margin: 2rem 0 !important;
-      backdrop-filter: blur(10px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.1) !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-    }
-
-    .menu-button.primary {
-      background: linear-gradient(135deg, #4a90e2, #7b68ee) !important;
-      border: none !important;
-      color: white !important;
-      font-weight: 600 !important;
-      font-size: 1.1rem !important;
-      padding: 1rem 2rem !important;
-      min-width: 250px !important;
-      box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3) !important;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pizzaria del Gatito, the game</title>
+  <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
   <div id="startMenu" class="centered-menu">
-    <!-- As ondas serão criadas pelo JS -->
     <div class="game-logo">
-      <h1>⚔️ CHARACTER CLASH</h1>
-      <p class="game-subtitle">O Jogo de Adivinhação Definitivo - Estilo "Cara a Cara"</p>
-    </div>
-
-    <div class="tutorial-section">
-      <h3>🎯 Como Jogar - Estilo "Cara a Cara"</h3>
-      <div class="tutorial-grid">
-        <div class="tutorial-item">
-          <span class="tutorial-icon">🤔</span>
-          <div class="tutorial-text">
-            <strong>Objetivo</strong>
-            <p>Adivinhe qual personagem seu oponente escolheu fazendo perguntas estratégicas!</p>
-          </div>
-        </div>
-        <div class="tutorial-item">
-          <span class="tutorial-icon">❓</span>
-          <div class="tutorial-text">
-            <strong>Como Funciona</strong>
-            <p>Faça perguntas como "É da Nintendo?" e elimine personagens baseado nas respostas</p>
-          </div>
-        </div>
-        <div class="tutorial-item">
-          <span class="tutorial-icon">🎮</span>
-          <div class="tutorial-text">
-            <strong>Modo Local</strong>
-            <p>Jogue com amigos no mesmo dispositivo, cada um escolhe um personagem secreto</p>
-          </div>
-        </div>
-        <div class="tutorial-item">
-          <span class="tutorial-icon">🌐</span>
-          <div class="tutorial-text">
-            <strong>Modo Online</strong>
-            <p>Desafie jogadores do mundo todo em salas privadas ou públicas</p>
-          </div>
-        </div>
-        <div class="tutorial-item">
-          <span class="tutorial-icon">🎲</span>
-          <div class="tutorial-text">
-            <strong>Categorias</strong>
-            <p>Nintendo, Antropomórficos ou Mixes diários com 50 personagens cada</p>
-          </div>
-        </div>
-        <div class="tutorial-item">
-          <span class="tutorial-icon">🏆</span>
-          <div class="tutorial-text">
-            <strong>Vitória</strong>
-            <p>Primeiro a adivinhar o personagem do oponente vence a partida!</p>
-          </div>
-        </div>
-      </div>
+      <h1>🍕 Pizzaria del Gatito</h1>
     </div>
 
     <div class="menu-buttons">
@@ -162,36 +23,43 @@
       </button>
       <button class="menu-button secondary" id="customizationButton">
         <span class="button-icon">⚙️</span>
-        <span class="button-text">Configurações</span>
+        <span class="button-text">Customização</span>
       </button>
     </div>
-
   </div>
 
   <div id="customizationMenu" class="centered-menu" style="display: none;">
     <div class="settings-header">
-      <h2>⚙️ Configurações</h2>
-      <p class="settings-subtitle">Personalize sua experiência de jogo</p>
+      <h2>⚙️ Customização</h2>
     </div>
 
     <div class="settings-content">
       <div class="customization-group">
-        <label for="themeSelect">🎨 Tema Visual</label>
+        <label for="themeSelect">🎨 Tema:</label>
         <select id="themeSelect" class="theme-selector">
-          <option value="dark">🌙 Escuro (Padrão)</option>
+          <option value="dark">🌙 Escuro</option>
           <option value="light">☀️ Claro</option>
-          <option value="blue">💙 Azul Oceano</option>
-          <option value="green">💚 Verde Floresta</option>
-          <option value="purple">💜 Roxo Místico</option>
+          <option value="blue">💙 Azul</option>
+          <option value="green">💚 Verde</option>
+          <option value="purple">💜 Roxo</option>
         </select>
-        <p class="setting-description">Escolha o tema que mais combina com você</p>
+      </div>
+
+      <div class="customization-group">
+        <label for="scaleRange">📏 Tamanho da interface:</label>
+        <div class="scale-control">
+          <input type="range" id="scaleRange" min="0.8" max="1.5" step="0.1" value="1">
+          <span class="scale-value">100%</span>
+        </div>
       </div>
     </div>
 
-    <button class="menu-button secondary" id="backToMenuFromCustomization">
-      <span class="button-icon">🔙</span>
-      <span class="button-text">Voltar ao Menu</span>
-    </button>
+    <div class="menu-buttons">
+      <button class="menu-button" id="backToMenuFromCustomization">
+        <span class="button-icon">🔙</span>
+        <span class="button-text">Voltar</span>
+      </button>
+    </div>
   </div>
 
   <div id="lobbyMenu" class="centered-menu" style="display: none;">
@@ -236,7 +104,7 @@
 
   <main style="display: none;">
     <header>
-      <h1>⚔️ CHARACTER CLASH</h1>
+      <h1>Pizzaria del Gatito, the game</h1>
       <div id="point-counter">Personagens restantes: 128</div>
       <div class="dropdown">
         <button id="categoryButton" class="menu-button small" type="button">
@@ -273,51 +141,5 @@
   <script src="data/characterData.js"></script>
   <script src="utils/helpers.js"></script>
   <script src="script.js"></script>
-
-  <!-- Mobile Optimization Script -->
-  <script>
-    // Otimizações mobile críticas
-    (function() {
-      // Fix viewport height para mobile
-      function setVH() {
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-      }
-
-      setVH();
-      window.addEventListener('resize', setVH);
-      window.addEventListener('orientationchange', () => setTimeout(setVH, 100));
-
-      // Prevenir zoom duplo toque no iOS
-      let lastTouchEnd = 0;
-      document.addEventListener('touchend', function (event) {
-        const now = (new Date()).getTime();
-        if (now - lastTouchEnd <= 300) {
-          event.preventDefault();
-        }
-        lastTouchEnd = now;
-      }, false);
-
-      // Log de debug para mobile
-      console.log('📱 Mobile optimizations loaded');
-      console.log('📐 Screen:', screen.width + 'x' + screen.height);
-      console.log('🖼️ Viewport:', window.innerWidth + 'x' + window.innerHeight);
-    })();
-  </script>
-
-  <!-- Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then((registration) => {
-            console.log('✅ Service Worker registrado com sucesso:', registration.scope);
-          })
-          .catch((error) => {
-            console.log('❌ Falha ao registrar Service Worker:', error);
-          });
-      });
-    }
-  </script>
 </body>
 </html>

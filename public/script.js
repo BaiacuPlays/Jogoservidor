@@ -736,8 +736,6 @@ function updateCounter(max) {
 }
 
 function showMenu(menuId) {
-  console.log(`🔄 showMenu chamada com: ${menuId}`);
-
   // Esconde todos os menus/telas
   const menus = [
     document.getElementById('startMenu'),
@@ -745,8 +743,6 @@ function showMenu(menuId) {
     document.getElementById('customizationMenu'),
     document.querySelector('main')
   ];
-
-  console.log('📋 Menus encontrados:', menus.map(m => m ? m.id || m.tagName : 'null'));
   menus.forEach(menu => {
     if (menu) {
       menu.style.display = 'none';
@@ -939,7 +935,7 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
     });
   }
 
-  // setupEventListeners(); // Comentado para evitar conflito
+  setupEventListeners();
   updateCounter(maxPoints);
   createPSPBackground();
   monitorWaveAnimations();
@@ -968,24 +964,6 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
   const backToMenuFromCustomization = document.getElementById('backToMenuFromCustomization');
   // Botão Voltar ao Menu dentro do jogo
   const backToMenuFromGame = mainContent ? mainContent.querySelector('button.menu-button.small:last-of-type') : null;
-
-  // Menu Inicial
-  if (playLocalButton) {
-    playLocalButton.addEventListener('click', function () {
-      showMenu('main');
-      selectCategory(currentCategory);
-    });
-  }
-  if (playOnlineButton) {
-    playOnlineButton.addEventListener('click', function () {
-      showMenu('lobbyMenu');
-    });
-  }
-  if (customizationButton) {
-    customizationButton.addEventListener('click', function () {
-      openCustomizationMenu();
-    });
-  }
 
 
   // Lobby
@@ -1248,15 +1226,25 @@ function updateScrollIndicators() {
 }
 
 function setupEventListeners() {
-  const startMenuButtons = document.querySelectorAll('#startMenu .menu-button');
-  if (startMenuButtons.length >= 2) {
-    startMenuButtons[0].addEventListener('click', startGame);
-    startMenuButtons[1].addEventListener('click', openCustomizationMenu);
-  } else {
-    console.error("Botões do menu inicial não encontrados ou insuficientes!");
+  // Configurar botões do menu inicial por ID
+  const playLocalButton = document.getElementById('playLocalButton');
+  const playOnlineButton = document.getElementById('playOnlineButton');
+  const customizationButton = document.getElementById('customizationButton');
+
+  if (playLocalButton) {
+    playLocalButton.addEventListener('click', startGame);
+  }
+  if (playOnlineButton) {
+    playOnlineButton.addEventListener('click', function() {
+      showMenu('lobbyMenu');
+    });
+  }
+  if (customizationButton) {
+    customizationButton.addEventListener('click', openCustomizationMenu);
   }
 
   const themeSelect = document.getElementById('themeSelect');
+  const scaleRange = document.getElementById('scaleRange');
 
   if (themeSelect) {
     themeSelect.addEventListener('change', function() {
@@ -1264,6 +1252,21 @@ function setupEventListeners() {
       document.body.className = theme;
       localStorage.setItem('theme', theme);
     });
+  }
+
+  if (scaleRange) {
+    scaleRange.addEventListener('input', function() {
+      const scale = this.value;
+      document.documentElement.style.setProperty('--interface-scale', scale);
+      document.querySelector('.scale-value').textContent = `${Math.round(scale * 100)}%`;
+      localStorage.setItem('scale', scale);
+    });
+
+    // Carregar escala salva
+    const savedScale = localStorage.getItem('scale') || '1';
+    document.documentElement.style.setProperty('--interface-scale', savedScale);
+    document.getElementById('scaleRange').value = savedScale;
+    document.querySelector('.scale-value').textContent = `${Math.round(savedScale * 100)}%`;
   }
 
   const customizationMenuButton = document.querySelector('#customizationMenu .menu-button');

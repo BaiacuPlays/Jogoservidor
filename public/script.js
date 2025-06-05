@@ -308,16 +308,9 @@ let currentActiveMaxPoints = maxPoints;
 function waitForData() {
   return new Promise((resolve) => {
     const checkData = () => {
-      console.log('🔍 Verificando dados...');
-      console.log('- characters:', typeof window.characters, window.characters ? window.characters.length : 'undefined');
-      console.log('- shuffleArray:', typeof window.shuffleArray);
-      console.log('- getRandomCharacters:', typeof window.getRandomCharacters);
-
       if (window.characters && window.shuffleArray && window.getRandomCharacters) {
-        console.log('✅ Todos os dados carregados com sucesso!');
         resolve();
       } else {
-        console.log('⏳ Aguardando carregamento dos dados...');
         setTimeout(checkData, 100);
       }
     };
@@ -853,17 +846,8 @@ function applyDeviceOptimizations() {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
-  console.log('🚀 Iniciando carregamento da página...');
-  console.log('🌐 URL atual:', window.location.href);
-  console.log('📁 Origin:', window.location.origin);
-
   // Aguardar carregamento dos dados
-  try {
-    await waitForData();
-  } catch (error) {
-    console.error('❌ Erro ao carregar dados:', error);
-    // Continuar mesmo com erro para não travar a página
-  }
+  await waitForData();
 
   // Aplicar otimizações do dispositivo
   applyDeviceOptimizations();
@@ -955,7 +939,7 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
     });
   }
 
-  setupEventListeners();
+  // setupEventListeners(); // Comentado para evitar conflito
   updateCounter(maxPoints);
   createPSPBackground();
   monitorWaveAnimations();
@@ -986,40 +970,21 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
   const backToMenuFromGame = mainContent ? mainContent.querySelector('button.menu-button.small:last-of-type') : null;
 
   // Menu Inicial
-  console.log('🔧 Configurando botões do menu...');
-  console.log('- playLocalButton:', !!playLocalButton);
-  console.log('- playOnlineButton:', !!playOnlineButton);
-  console.log('- customizationButton:', !!customizationButton);
-
   if (playLocalButton) {
-    console.log('✅ Configurando botão Jogar Local');
     playLocalButton.addEventListener('click', function () {
-      console.log('🎮 Botão Jogar Local clicado!');
       showMenu('main');
       selectCategory(currentCategory);
     });
-  } else {
-    console.error('❌ Botão Jogar Local não encontrado!');
   }
-
   if (playOnlineButton) {
-    console.log('✅ Configurando botão Jogar Online');
     playOnlineButton.addEventListener('click', function () {
-      console.log('🌐 Botão Jogar Online clicado!');
       showMenu('lobbyMenu');
     });
-  } else {
-    console.error('❌ Botão Jogar Online não encontrado!');
   }
-
   if (customizationButton) {
-    console.log('✅ Configurando botão Configurações');
     customizationButton.addEventListener('click', function () {
-      console.log('⚙️ Botão Configurações clicado!');
       openCustomizationMenu();
     });
-  } else {
-    console.error('❌ Botão Configurações não encontrado!');
   }
 
 

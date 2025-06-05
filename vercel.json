@@ -1,10 +1,16 @@
 {
-  "framework": "nextjs",
   "crons": [
     {
       "path": "/api/scheduled/generate-mixes",
       "schedule": "0 0 * * *"
     }
   ],
-  "regions": ["gru1"]
+  "regions": ["gru1"],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/index.html",
+      "permanent": false
+    }
+  ]
 }

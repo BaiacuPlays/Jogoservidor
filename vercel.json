@@ -1,29 +1,19 @@
 {
-  "framework": "nextjs",
-  "crons": [
+  "rewrites": [
     {
-      "path": "/api/scheduled/generate-mixes",
-      "schedule": "0 0 * * *"
+      "source": "/",
+      "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/index.html",
       "headers": [
         {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        },
-        {
-          "key": "Pragma",
-          "value": "no-cache"
-        },
-        {
-          "key": "Expires",
-          "value": "0"
+          "key": "Content-Type",
+          "value": "text/html; charset=utf-8"
         }
       ]
     }
-  ],
-  "regions": ["gru1"]
+  ]
 }

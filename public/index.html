@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, interactive-widget=resizes-content, shrink-to-fit=no">
   <meta name="description" content="Character Clash - O jogo de adivinhação estilo 'Cara a Cara' com personagens de games. Adivinhe qual personagem seu oponente escolheu!">
   <meta name="keywords" content="jogo, cara a cara, adivinhação, personagens, character clash, online, multiplayer, nintendo, gaming, guess who">
   <meta name="author" content="Character Clash Team">
@@ -269,7 +269,48 @@
     <section class="character-grid" id="characterGrid"></section>
   </main>
 
-  <script type="module" src="/script.js?v=2"></script>
+  <!-- Carregamento dos dados primeiro -->
+  <script>
+    console.log('🔄 Iniciando carregamento dos scripts...');
+  </script>
+  <script src="./data/characterData.js?v=4"></script>
+  <script src="./utils/helpers.js?v=4"></script>
+  <script>
+    console.log('📊 Dados carregados:', typeof window.characters !== 'undefined' ? 'SIM' : 'NÃO');
+    console.log('🔧 Helpers carregados:', typeof window.shuffleArray !== 'undefined' ? 'SIM' : 'NÃO');
+  </script>
+  <script src="./script.js?v=4"></script>
+
+  <!-- Mobile Optimization Script -->
+  <script>
+    // Otimizações mobile críticas
+    (function() {
+      // Fix viewport height para mobile
+      function setVH() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      }
+
+      setVH();
+      window.addEventListener('resize', setVH);
+      window.addEventListener('orientationchange', () => setTimeout(setVH, 100));
+
+      // Prevenir zoom duplo toque no iOS
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function (event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+
+      // Log de debug para mobile
+      console.log('📱 Mobile optimizations loaded');
+      console.log('📐 Screen:', screen.width + 'x' + screen.height);
+      console.log('🖼️ Viewport:', window.innerWidth + 'x' + window.innerHeight);
+    })();
+  </script>
 
   <!-- Service Worker Registration -->
   <script>

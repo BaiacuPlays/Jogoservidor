@@ -297,11 +297,28 @@ const characterGrid = document.getElementById('characterGrid');
 const chosenCharacterBox = document.getElementById('chosenCharacterBox');
 const selectedCategory = document.getElementById('selectedCategory');
 
-import { characters, uniqueCharacters, nintendoCharacters, anthropomorphicCharacters } from '/data/characterData.js';
-import { shuffleArray, getRandomCharacters } from '/utils/helpers.js';
+// As variáveis são carregadas globalmente pelos scripts anteriores
+// characters, uniqueCharacters, nintendoCharacters, anthropomorphicCharacters
+// shuffleArray, getRandomCharacters
 
 let currentActiveCharacterList = [];
 let currentActiveMaxPoints = maxPoints;
+
+// Função para garantir que os dados estejam carregados
+function waitForData() {
+  return new Promise((resolve) => {
+    const checkData = () => {
+      if (window.characters && window.shuffleArray && window.getRandomCharacters) {
+        console.log('✅ Dados carregados com sucesso!');
+        resolve();
+      } else {
+        console.log('⏳ Aguardando carregamento dos dados...');
+        setTimeout(checkData, 100);
+      }
+    };
+    checkData();
+  });
+}
 
 // Sistema de código secreto
 let secretSequence = 'sacabambapis';
@@ -623,6 +640,20 @@ function createCharacterGridInternal() {
       img.alt = charObject.name;
       img.loading = 'lazy'; // Native lazy loading fallback
 
+      // Fallback para erro de carregamento
+      img.onerror = function() {
+        console.warn(`Erro ao carregar imagem: ${charObject.image}`);
+        this.style.backgroundColor = '#333';
+        this.style.display = 'flex';
+        this.style.alignItems = 'center';
+        this.style.justifyContent = 'center';
+        this.style.color = '#fff';
+        this.style.fontSize = '0.8rem';
+        this.style.textAlign = 'center';
+        this.style.fontFamily = 'Poppins, sans-serif';
+        this.innerHTML = charObject.name;
+      };
+
       imgContainer.appendChild(img);
       charDiv.appendChild(imgContainer);
       if (characterGrid) {
@@ -812,7 +843,12 @@ function applyDeviceOptimizations() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
+  console.log('🚀 Iniciando carregamento da página...');
+
+  // Aguardar carregamento dos dados
+  await waitForData();
+
   // Aplicar otimizações do dispositivo
   applyDeviceOptimizations();
 
@@ -1189,6 +1225,8 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
   }
 
   selectCategory(currentCategory);
+
+  console.log('✅ Página carregada com sucesso!');
 });
 
 function updateScrollIndicators() {

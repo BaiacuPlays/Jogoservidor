@@ -1,6 +1,6 @@
 // data/characterData.js
 
-export const characters = [
+const characters = [
     { name: "Mario", image: "/imagens/mario.jpeg" },
     { name: "Link", image: "/imagens/link.webp" },
     { name: "Pikachu", image: "/imagens/pikachu.avif" },
@@ -184,11 +184,11 @@ export const characters = [
     { name: "Malt Marzipan", image: "/imagens/fuga.png" },
   ];
 
-export const uniqueCharacters = characters.filter((char, index, self) =>
+const uniqueCharacters = characters.filter((char, index, self) =>
     index === self.findIndex((c) => c.name === char.name)
 );
 
-export const nintendoCharacters = [
+const nintendoCharacters = [
     'Mario', 'Link', 'Pikachu', 'Kirby', 'Donkey', 'Bowser', 'Zelda', 'Wario', 'Mewtwo',
     'Yoshi', 'Luigi', 'Peach', 'Daisy', 'Pichu', 'Falco', 'Marth', 'Lucina', 'Ganondorf',
     'Wolf', 'Villager', 'Isabelle', 'Greninja', 'Bowser Jr.', 'Duck Hunt', 'Inkling',
@@ -197,7 +197,7 @@ export const nintendoCharacters = [
     'King Dedede', 'Little Mac','Meta Knight', 'Chaim Chomp', 'Hammer Bro', 'Toadette', 'Goomba', 
     'Koopa', 'Petey Piranha', 'Kamek', 'Rosalina', 'Pauline', 'Dixie Kong', 'Dry Bones', 'Birdo',
 ];
-export const anthropomorphicCharacters = [
+const anthropomorphicCharacters = [
     'Mewtwo', 'Shadow', 'Spyro', 'Tail', 'Ralsei', 'Yi', 'Laika', 'Pikachu', 'Donkey',
 'Banjo', 'Asriel', 'Ori', 'Lamb', 'Crash', 'Bowser', 'Sonic', 'Fox', 'Falco', 'Wolf',
 'Greninja', 'Incineroar', 'Funky Kong', 'Diddy Kong', 'Knuckles', 'King K. Rool',
@@ -210,3 +210,9 @@ export const anthropomorphicCharacters = [
 'Jolteon', 'Flareon', 'Espeon', 'Umbreon', 'Absol', 'Kamek', 'Dixie Kong', 'Birdo', 'Flora', 'Malt Marzipan'
 
 ];
+
+// Disponibilizar globalmente para compatibilidade
+window.characters = characters;
+window.uniqueCharacters = uniqueCharacters;
+window.nintendoCharacters = nintendoCharacters;
+window.anthropomorphicCharacters = anthropomorphicCharacters;

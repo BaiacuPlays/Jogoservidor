@@ -1645,17 +1645,27 @@ body.purple .scroll-indicator.bottom {
   }
 }
 
-/* Ajustes específicos para mobile */
+/* Otimizações específicas para mobile */
 @media (max-width: 768px) and (orientation: portrait) {
+  /* Aceleração de hardware */
+  * {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
   body {
     font-size: 16px;
     overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   
   .centered-menu {
     padding: 1rem;
     min-height: 100vh;
-    min-height: 100dvh; /* Dynamic viewport height */
+    min-height: 100dvh;
+    will-change: transform;
   }
   
   .centered-menu h2 {
@@ -1669,12 +1679,15 @@ body.purple .scroll-indicator.bottom {
     padding: 16px 24px;
     font-size: 16px;
     margin: 8px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
   
-  /* Garantir que o jogo funcione bem no mobile */
   main {
     padding: 0.5rem;
     gap: 1rem;
+    will-change: transform;
+    contain: layout style;
   }
   
   header {
@@ -1682,12 +1695,43 @@ body.purple .scroll-indicator.bottom {
     max-width: 100vw;
     padding: 1rem;
     margin: 0;
+    will-change: transform;
   }
   
   .character-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 0.8rem;
     padding: 0.5rem;
+    will-change: contents;
+    contain: layout style paint;
+    display: grid;
+    grid-auto-rows: minmax(auto, 1fr);
+  }
+  
+  .character {
+    will-change: transform;
+    transform: translateZ(0);
+    contain: layout style paint;
+  }
+  
+  .character img {
+    will-change: transform;
+    transform: translateZ(0);
+    object-fit: cover;
+    object-position: center;
+  }
+  
+  /* Otimizar scroll em mobile */
+  body {
+    scroll-behavior: smooth;
+    overscroll-behavior-y: contain;
+  }
+  
+  /* Melhorar performance de animações */
+  .menu-button,
+  .character {
+    transition-property: transform, opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -1706,6 +1750,29 @@ body.purple .scroll-indicator.bottom {
   .character-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* Otimizações para dispositivos Android */
+body.android-device {
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+body.android-device .menu-button {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Otimizações para tablets */
+body.tablet-device .character-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+body.tablet-device .menu-button {
+  width: 320px;
+  font-size: 18px;
+}
+
+body.tablet-device header {
+  width: 450px;
 }
 
 /* Ajustes para telas muito grandes */
@@ -1758,7 +1825,7 @@ body.purple .scroll-indicator.bottom {
     min-height: 100vh;
     min-height: 100dvh;
     justify-content: flex-start;
-    padding-top: 2rem;
+    padding-top: max(2rem, var(--safe-area-inset-top));
   }
   
   .centered-menu h2 {
@@ -1779,12 +1846,18 @@ body.purple .scroll-indicator.bottom {
   }
 
   .character-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
   }
 
   header {
     position: sticky;
-    top: 1rem;
+    top: max(1rem, var(--safe-area-inset-top));
+  }
+  
+  main {
+    flex-direction: row;
+    align-items: flex-start;
   }
 }
 
@@ -1793,6 +1866,36 @@ body.purple .scroll-indicator.bottom {
   .character img {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
+  }
+}
+
+/* Otimizações para PWA em tela cheia */
+@media (display-mode: standalone) {
+  body {
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+  
+  .centered-menu {
+    padding-top: max(1rem, var(--safe-area-inset-top));
+    padding-bottom: max(1rem, var(--safe-area-inset-bottom));
+  }
+}
+
+/* Otimizações para hover em dispositivos touch */
+@media (hover: none) and (pointer: coarse) {
+  .character:hover,
+  .menu-button:hover,
+  .dropdown-item:hover {
+    transform: none;
+  }
+  
+  .character:active {
+    transform: scale(0.95);
+  }
+  
+  .menu-button:active {
+    transform: scale(0.95);
   }
 }
 
@@ -1812,6 +1915,22 @@ body.purple .scroll-indicator.bottom {
   }
 }
 
+/* Otimizações para contrast alto */
+@media (prefers-contrast: high) {
+  .character {
+    border-width: 3px;
+  }
+  
+  .menu-button {
+    border-width: 3px;
+    font-weight: 700;
+  }
+  
+  .psp-waves {
+    opacity: 0.1 !important;
+  }
+}
+
 /* Ajustes para reduzir movimento */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -1819,6 +1938,21 @@ body.purple .scroll-indicator.bottom {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  
+  .psp-waves {
+    display: none !important;
+  }
+}
+
+/* Otimizações para conexão lenta */
+@media (prefers-reduced-data) {
+  .character img {
+    image-rendering: pixelated;
+  }
+  
+  .psp-waves {
+    opacity: 0.2 !important;
   }
 }
 
@@ -1830,6 +1964,21 @@ body.purple .scroll-indicator.bottom {
   
   body {
     min-height: -webkit-fill-available;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Correção para bounce scroll no iOS */
+  body {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .centered-menu,
+  main {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -1841,10 +1990,23 @@ body.purple .scroll-indicator.bottom {
   
   body {
     min-height: -webkit-fill-available;
+    overscroll-behavior: none;
   }
   
   .centered-menu {
     min-height: -webkit-fill-available;
+    overscroll-behavior: contain;
+  }
+  
+  /* Otimizações para scroll suave em mobile */
+  .dropdown-content {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* Melhorar performance de scroll */
+  .character-grid {
+    contain: layout style paint;
   }
 }
 
@@ -2569,16 +2731,112 @@ body.mobile-device {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 body.mobile-device .menu-button {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   touch-action: manipulation;
+  cursor: pointer;
 }
 
 body.mobile-device .character {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   touch-action: manipulation;
+  cursor: pointer;
+}
+
+body.mobile-device .dropdown-content {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+/* Melhorar responsividade do touch */
+body.mobile-device .character,
+body.mobile-device .menu-button,
+body.mobile-device .dropdown-item {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Otimizar fontes para mobile */
+body.mobile-device {
+  font-display: swap;
+  text-rendering: optimizeSpeed;
+}
+
+/* Reduzir sombras em dispositivos lentos */
+body.low-memory-device * {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Otimizações para performance em mobile */
+body.mobile-device * {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Intersection Observer para lazy loading */
+.character img[data-src] {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.character img[data-loaded] {
+  opacity: 1;
+}
+
+/* Placeholder para imagens não carregadas */
+.character img:not([src]) {
+  background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+              linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
+              linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
+              linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+body.mobile-device .character-grid {
+  contain: layout style paint;
+}
+
+body.mobile-device .psp-waves {
+  will-change: transform;
+  contain: layout style paint;
+}
+
+/* Lazy loading para imagens em mobile */
+body.mobile-device .character img {
+  loading: lazy;
+  decoding: async;
+}
+
+/* Otimizações de GPU para mobile */
+body.mobile-device .character,
+body.mobile-device .menu-button {
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Reduzir blur em dispositivos com pouca memória */
+body.low-memory-device header,
+body.low-memory-device .menu-button,
+body.low-memory-device .dropdown-content {
+  backdrop-filter: none !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Simplificar animações em dispositivos lentos */
+body.low-memory-device .character:hover {
+  transform: none !important;
+}
+
+body.low-memory-device .menu-button:hover {
+  transform: none !important;
 }
 
 body.ios-device {
@@ -2594,11 +2852,61 @@ body.ios-device .centered-menu {
 /* Usar custom property para viewport height */
 :root {
   --vh: 1vh;
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
+/* Otimizações para dispositivos com pouca memória */
+body.low-memory-device {
+  --interface-scale: 0.9;
+}
+
+body.low-memory-device .character-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+
+body.low-memory-device .psp-waves {
+  display: none !important;
+}
+
+body.low-memory-device * {
+  animation-duration: 0.1s !important;
+  transition-duration: 0.1s !important;
+}
+
+/* Otimizações para modo economia de dados */
+body.save-data-mode .character img {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+body.save-data-mode .psp-waves {
+  opacity: 0.3 !important;
+}
+
+body.save-data-mode .character::before,
+body.save-data-mode .menu-button::before,
+body.save-data-mode .menu-button::after {
+  display: none !important;
 }
 
 @media (max-width: 768px) {
   .centered-menu {
     min-height: calc(var(--vh, 1vh) * 100);
+    padding-top: max(1rem, var(--safe-area-inset-top));
+    padding-bottom: max(1rem, var(--safe-area-inset-bottom));
+    padding-left: max(1rem, var(--safe-area-inset-left));
+    padding-right: max(1rem, var(--safe-area-inset-right));
+  }
+  
+  main {
+    padding-top: max(0.5rem, var(--safe-area-inset-top));
+    padding-bottom: max(0.5rem, var(--safe-area-inset-bottom));
+    padding-left: max(0.5rem, var(--safe-area-inset-left));
+    padding-right: max(0.5rem, var(--safe-area-inset-right));
   }
 }
 

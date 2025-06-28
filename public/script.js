@@ -386,8 +386,41 @@ function createCharacterGridInternal() {
       imgContainer.classList.add('image-container');
 
       const img = document.createElement('img');
-      img.src = charObject.image;
+      
+      // Lazy loading otimizado para mobile
+      if ('loading' in HTMLImageElement.prototype) {
+        img.loading = 'lazy';
+        img.src = charObject.image;
+      } else {
+        // Fallback para navegadores sem suporte nativo
+        img.dataset.src = charObject.image;
+        img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E';
+        
+        // Intersection Observer para lazy loading
+        if ('IntersectionObserver' in window) {
+          const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+                img.setAttribute('data-loaded', 'true');
+                observer.unobserve(img);
+              }
+            });
+          }, {
+            rootMargin: '50px 0px',
+            threshold: 0.01
+          });
+          imageObserver.observe(img);
+        } else {
+          // Fallback sem Intersection Observer
+          img.src = charObject.image;
+        }
+      }
+      
       img.alt = charObject.name;
+      img.decoding = 'async';
 
       imgContainer.appendChild(img);
       charDiv.appendChild(imgContainer);
@@ -405,7 +438,13 @@ function createCharacterGridInternal() {
           chosenCharacter = charObject;
           charDiv.classList.add('locked');
           if (chosenCharacterBox) {
-            chosenCharacterBox.innerHTML = `<img src="${charObject.image}" alt="${charObject.name}">`;
+            const img = document.createElement('img');
+            img.src = charObject.image;
+            img.alt = charObject.name;
+            img.loading = 'eager'; // Carregar imediatamente para personagem escolhido
+            img.decoding = 'async';
+            chosenCharacterBox.innerHTML = '';
+            chosenCharacterBox.appendChild(img);
           }
 
           // Após escolher o personagem, passar para o próximo turno
@@ -492,32 +531,78 @@ function showMenu(menuId) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Detectar se é mobile e aplicar correções
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  // Detecção avançada de dispositivos móveis
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                   (navigator.maxTouchPoints && navigator.maxTouchPoints > 2) ||
+                   window.matchMedia('(pointer: coarse)').matches;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  const isTablet = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(navigator.userAgent);
   
   if (isMobile) {
     document.body.classList.add('mobile-device');
     console.log('📱 Dispositivo móvel detectado');
     
+    // Otimizações para performance mobile
+    document.body.style.willChange = 'transform';
+    
     // Correção para viewport height no mobile
     const setVH = () => {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
+      
+      // Safe area insets para dispositivos com notch
+      if (CSS.supports('padding: max(0px)')) {
+        document.documentElement.style.setProperty('--safe-area-inset-top', 'env(safe-area-inset-top)');
+        document.documentElement.style.setProperty('--safe-area-inset-bottom', 'env(safe-area-inset-bottom)');
+        document.documentElement.style.setProperty('--safe-area-inset-left', 'env(safe-area-inset-left)');
+        document.documentElement.style.setProperty('--safe-area-inset-right', 'env(safe-area-inset-right)');
+      }
     };
     setVH();
-    window.addEventListener('resize', setVH);
+    
+    // Debounce para resize events
+    let resizeTimeout;
+    const debouncedSetVH = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(setVH, 100);
+    };
+    
+    window.addEventListener('resize', debouncedSetVH, { passive: true });
     window.addEventListener('orientationchange', () => {
-      setTimeout(setVH, 100);
+      setTimeout(setVH, 150);
+    }, { passive: true });
+    
+    // Prevenir zoom em inputs
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+      input.addEventListener('focus', () => {
+        if (input.style.fontSize !== '16px') {
+          input.style.fontSize = '16px';
+        }
+      }, { passive: true });
     });
   }
   
   if (isIOS) {
     document.body.classList.add('ios-device');
     console.log('🍎 Dispositivo iOS detectado');
+    
+    // Correções específicas para iOS
+    document.body.style.webkitOverflowScrolling = 'touch';
   }
   
-  // Debug para mobile
+  if (isAndroid) {
+    document.body.classList.add('android-device');
+    console.log('🤖 Dispositivo Android detectado');
+  }
+  
+  if (isTablet) {
+    document.body.classList.add('tablet-device');
+    console.log('📱 Tablet detectado');
+  }
+  
+  // Debug avançado para mobile
   if (isMobile) {
     console.log('📱 Informações do dispositivo:', {
       userAgent: navigator.userAgent,
@@ -526,8 +611,28 @@ document.addEventListener('DOMContentLoaded', function () {
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       devicePixelRatio: window.devicePixelRatio,
-      touchSupport: 'ontouchstart' in window
+      touchSupport: 'ontouchstart' in window,
+      maxTouchPoints: navigator.maxTouchPoints,
+      connection: navigator.connection ? {
+        effectiveType: navigator.connection.effectiveType,
+        downlink: navigator.connection.downlink,
+        saveData: navigator.connection.saveData
+      } : 'N/A',
+      memory: navigator.deviceMemory || 'N/A',
+      hardwareConcurrency: navigator.hardwareConcurrency || 'N/A'
     });
+    
+    // Otimizações baseadas na conexão
+    if (navigator.connection && navigator.connection.saveData) {
+      console.log('📶 Modo economia de dados ativado');
+      document.body.classList.add('save-data-mode');
+    }
+    
+    // Otimizações baseadas na memória
+    if (navigator.deviceMemory && navigator.deviceMemory < 4) {
+      console.log('🧠 Dispositivo com pouca memória detectado');
+      document.body.classList.add('low-memory-device');
+    }
   }
   
   // Inicializa o áudio na primeira interação do usuário
@@ -899,13 +1004,42 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
 
   selectCategory(currentCategory);
   
-  // Forçar limpeza completa do cache
-  if ('serviceWorker' in navigator && 'caches' in window) {
-    caches.keys().then(cacheNames => {
-      cacheNames.forEach(cacheName => {
-        console.log('🗑️ Removendo cache:', cacheName);
-        caches.delete(cacheName);
-      });
+  // Registrar Service Worker para cache otimizado
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('✅ SW registrado:', registration.scope);
+          
+          // Verificar atualizações
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('🆕 Nova versão disponível');
+              }
+            });
+          });
+        })
+        .catch(error => {
+          console.log('❌ Falha no SW:', error);
+        });
+    });
+  }
+  
+  // Preload de recursos críticos para mobile
+  if (isMobile) {
+    const preloadResources = [
+      '/data/characterData.js',
+      '/utils/helpers.js'
+    ];
+    
+    preloadResources.forEach(resource => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.href = resource;
+      link.as = 'script';
+      document.head.appendChild(link);
     });
   }
 });
@@ -1143,7 +1277,13 @@ function selectRandomCharacter() {
 
   // Atualiza a UI
   if (chosenCharacterBox) {
-    chosenCharacterBox.innerHTML = `<img src="${randomChar.image}" alt="${randomChar.name}">`;
+    const img = document.createElement('img');
+    img.src = randomChar.image;
+    img.alt = randomChar.name;
+    img.loading = 'eager';
+    img.decoding = 'async';
+    chosenCharacterBox.innerHTML = '';
+    chosenCharacterBox.appendChild(img);
   }
 
   // Marca o personagem como selecionado na grid
@@ -1182,7 +1322,13 @@ function resetCharacters() {
   updateCounter(currentActiveMaxPoints);
 
   if (chosenCharacter && chosenCharacterBox) {
-    chosenCharacterBox.innerHTML = `<img src="${chosenCharacter.image}" alt="${chosenCharacter.name}">`;
+    const img = document.createElement('img');
+    img.src = chosenCharacter.image;
+    img.alt = chosenCharacter.name;
+    img.loading = 'eager';
+    img.decoding = 'async';
+    chosenCharacterBox.innerHTML = '';
+    chosenCharacterBox.appendChild(img);
   }
 
   updateChosenCharacterHeader();
@@ -1582,7 +1728,15 @@ function updateChosenCharacterHeader() {
   const chosenHeader = document.getElementById('chosenCharacterHeader');
   if (!chosenHeader) return;
   if (chosenCharacter && chosenCharacter.image) {
-    chosenHeader.innerHTML = `<img src="${chosenCharacter.image}" alt="Seu personagem" class="chosen-header-img" title="Seu personagem">`;
+    const img = document.createElement('img');
+    img.src = chosenCharacter.image;
+    img.alt = 'Seu personagem';
+    img.className = 'chosen-header-img';
+    img.title = 'Seu personagem';
+    img.loading = 'eager';
+    img.decoding = 'async';
+    chosenHeader.innerHTML = '';
+    chosenHeader.appendChild(img);
   } else {
     chosenHeader.innerHTML = `<div class="placeholder" title="Seu personagem">?</div>`;
   }

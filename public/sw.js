@@ -1,6 +1,7 @@
-const CACHE_NAME = 'pizzaria-gatito-v1.2.0';
-const STATIC_CACHE = 'static-v1.2.0';
-const DYNAMIC_CACHE = 'dynamic-v1.2.0';
+const CACHE_NAME = 'cara-acara-mobile-v1.3.0';
+const STATIC_CACHE = 'static-mobile-v1.3.0';
+const DYNAMIC_CACHE = 'dynamic-mobile-v1.3.0';
+const IMAGE_CACHE = 'images-mobile-v1.3.0';
 
 // Recursos para cache estático (sempre em cache)
 const STATIC_ASSETS = [
@@ -8,14 +9,20 @@ const STATIC_ASSETS = [
   '/styles/styles.css',
   '/script.js',
   '/manifest.json',
-  '/audio.wav'
+  '/audio.wav',
+  '/data/characterData.js',
+  '/utils/helpers.js'
 ];
 
 // Recursos para cache dinâmico (cache conforme uso)
 const DYNAMIC_ASSETS = [
   '/api/',
   '/data/',
-  '/utils/',
+  '/utils/'
+];
+
+// Recursos de imagem (cache separado com compressão)
+const IMAGE_ASSETS = [
   '/imagens/'
 ];
 
@@ -48,7 +55,7 @@ self.addEventListener('activate', event => {
       .then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE && cacheName !== IMAGE_CACHE) {
               console.log('Service Worker: Deleting old cache', cacheName);
               return caches.delete(cacheName);
             }
@@ -66,6 +73,27 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
+  
+  // Cache otimizado para imagens (mobile-first)
+  if (request.destination === 'image' || IMAGE_ASSETS.some(asset => url.pathname.includes(asset))) {
+    event.respondWith(
+      caches.open(IMAGE_CACHE).then(cache => {
+        return cache.match(request).then(response => {
+          if (response) {
+            return response;
+          }
+          return fetch(request).then(fetchResponse => {
+            // Cache apenas imagens pequenas para mobile
+            if (fetchResponse.status === 200 && fetchResponse.headers.get('content-length') < 500000) {
+              cache.put(request, fetchResponse.clone());
+            }
+            return fetchResponse;
+          });
+        });
+      })
+    );
+    return;
+  }
   
   // Estratégia Cache First para recursos estáticos
   if (STATIC_ASSETS.some(asset => url.pathname.includes(asset))) {

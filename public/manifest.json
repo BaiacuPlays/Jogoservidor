@@ -1,16 +1,40 @@
 {
-  "name": "Pizzaria del Gatito - Jogo de Adivinhação Estilo Cara a Cara",
-  "short_name": "Pizzaria del Gatito",
-  "description": "O jogo de adivinhação estilo 'Cara a Cara' com personagens de games. Adivinhe qual personagem seu oponente escolheu!",
+  "name": "Cara a Cara - Jogo de Adivinhação",
+  "short_name": "CaraAcara",
+  "description": "Jogo de adivinhação estilo 'Cara a Cara' otimizado para mobile. Adivinhe qual personagem seu oponente escolheu!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#1a1a1a",
-  "orientation": "any",
+  "orientation": "portrait-primary",
   "scope": "/",
   "lang": "pt-BR",
   "categories": ["games", "entertainment"],
   "icons": [
+    {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/icon-192x192.png",
       "sizes": "192x192",
@@ -41,5 +65,9 @@
   "prefer_related_applications": false,
   "edge_side_panel": {
     "preferred_width": 400
+  },
+  "display_override": ["window-controls-overlay", "standalone"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
   }
 }

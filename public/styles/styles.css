@@ -2602,18 +2602,3 @@ body.ios-device .centered-menu {
   }
 }
 
-/* Correção específica para o problema "Character Clash" */
-.centered-menu h2 {
-  font-size: 2.2rem;
-  text-align: center;
-  word-break: break-word;
-  line-height: 1.2;
-  margin-bottom: 2rem;
-}
-
-@media (max-width: 480px) {
-  .centered-menu h2 {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-  }
-}

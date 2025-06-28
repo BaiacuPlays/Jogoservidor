@@ -1,6 +1,6 @@
 {
-  "name": "Character Clash - Jogo de Adivinhação Estilo Cara a Cara",
-  "short_name": "Character Clash",
+  "name": "Pizzaria del Gatito - Jogo de Adivinhação Estilo Cara a Cara",
+  "short_name": "Pizzaria del Gatito",
   "description": "O jogo de adivinhação estilo 'Cara a Cara' com personagens de games. Adivinhe qual personagem seu oponente escolheu!",
   "start_url": "/",
   "display": "standalone",

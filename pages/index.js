@@ -1,17 +1,15 @@
-import fs from 'fs';
-import path from 'path';
-
-export default function Home({ html }) {
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+export default function Home() {
+  if (typeof window !== 'undefined') {
+    window.location.href = 'https://jogoservidor.vercel.app/index.html';
+  }
+  return null;
 }
 
-export async function getStaticProps() {
-  const filePath = path.join(process.cwd(), 'public', 'index.html');
-  const html = fs.readFileSync(filePath, 'utf8');
-  
+export async function getServerSideProps() {
   return {
-    props: {
-      html,
+    redirect: {
+      destination: 'https://jogoservidor.vercel.app/index.html',
+      permanent: false,
     },
   };
 } 

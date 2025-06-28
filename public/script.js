@@ -492,14 +492,54 @@ function showMenu(menuId) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Detectar se é mobile e aplicar correções
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  
+  if (isMobile) {
+    document.body.classList.add('mobile-device');
+    console.log('📱 Dispositivo móvel detectado');
+    
+    // Correção para viewport height no mobile
+    const setVH = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    setVH();
+    window.addEventListener('resize', setVH);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(setVH, 100);
+    });
+  }
+  
+  if (isIOS) {
+    document.body.classList.add('ios-device');
+    console.log('🍎 Dispositivo iOS detectado');
+  }
+  
+  // Debug para mobile
+  if (isMobile) {
+    console.log('📱 Informações do dispositivo:', {
+      userAgent: navigator.userAgent,
+      screenWidth: screen.width,
+      screenHeight: screen.height,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+      devicePixelRatio: window.devicePixelRatio,
+      touchSupport: 'ontouchstart' in window
+    });
+  }
+  
   // Inicializa o áudio na primeira interação do usuário
   const initAudioOnFirstClick = () => {
     initAudio();
     document.removeEventListener('click', initAudioOnFirstClick);
     document.removeEventListener('keydown', initAudioOnFirstClick);
+    document.removeEventListener('touchstart', initAudioOnFirstClick);
   };
   document.addEventListener('click', initAudioOnFirstClick);
   document.addEventListener('keydown', initAudioOnFirstClick);
+  document.addEventListener('touchstart', initAudioOnFirstClick);
 
   // Adiciona listener para detectar a sequência secreta
   document.addEventListener('keydown', handleSecretSequence);
@@ -858,6 +898,16 @@ initialCategoryElement.textContent = 'Todos'; // Ou a sua categoria padrão
   }
 
   selectCategory(currentCategory);
+  
+  // Forçar limpeza completa do cache
+  if ('serviceWorker' in navigator && 'caches' in window) {
+    caches.keys().then(cacheNames => {
+      cacheNames.forEach(cacheName => {
+        console.log('🗑️ Removendo cache:', cacheName);
+        caches.delete(cacheName);
+      });
+    });
+  }
 });
 
 function updateScrollIndicators() {

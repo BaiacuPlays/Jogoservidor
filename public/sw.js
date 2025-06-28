@@ -1,6 +1,6 @@
-const CACHE_NAME = 'pizzaria-gatito-v1.0.0';
-const STATIC_CACHE = 'static-v1.0.0';
-const DYNAMIC_CACHE = 'dynamic-v1.0.0';
+const CACHE_NAME = 'pizzaria-gatito-v1.2.0';
+const STATIC_CACHE = 'static-v1.2.0';
+const DYNAMIC_CACHE = 'dynamic-v1.2.0';
 
 // Recursos para cache estático (sempre em cache)
 const STATIC_ASSETS = [
